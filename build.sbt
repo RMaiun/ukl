@@ -15,8 +15,14 @@ lazy val root = (project in file("."))
       "org.http4s"      %% "http4s-circe"        % Http4sVersion,
       "org.http4s"      %% "http4s-dsl"          % Http4sVersion,
       "io.circe"        %% "circe-generic"       % CirceVersion,
-      "org.specs2"      %% "specs2-core"         % Specs2Version % "test",
-      "ch.qos.logback"  %  "logback-classic"     % LogbackVersion
+      "io.circe"        %% "circe-literal"       % CirceVersion      % "it,test",
+      "io.circe"        %% "circe-optics"        % CirceVersion      % "it",
+      "org.specs2"      %% "specs2-core"         % Specs2Version     % "test",
+      "ch.qos.logback"  %  "logback-classic"     % LogbackVersion,
+      "io.chrisdavenport" %% "log4cats-slf4j" % "1.1.1",
+      "com.github.pureconfig" %% "pureconfig" % "0.13.0",
+
+
     ),
     addCompilerPlugin("org.typelevel" %% "kind-projector"     % "0.10.3"),
     addCompilerPlugin("com.olegpy"    %% "better-monadic-for" % "0.3.1")
