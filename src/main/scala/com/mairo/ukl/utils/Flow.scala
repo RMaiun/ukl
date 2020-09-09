@@ -1,8 +1,9 @@
 package com.mairo.ukl.utils
 
-import cats.Applicative
+import cats.{Applicative, Monad}
 import cats.data.EitherT
 import cats.implicits._
+import io.chrisdavenport.log4cats.Logger
 
 object Flow {
   type Result[T] = Either[Throwable, T]
@@ -31,5 +32,16 @@ object Flow {
 
   def fromResultT[F[_] : Applicative, T](data: Result[T]): FlowT[F, T] = {
     EitherT(Applicative[F].pure(data))
+  }
+  def fromFlow[F[_], T](flow:Flow[F,T]):FlowT[F,T] = {
+    EitherT(flow)
+  }
+
+  def fromF[F[_]:Monad,T](fa:F[T]):FlowT[F,T] = {
+    EitherT(Monad[F].map(fa)(x => x.asRight[Throwable]))
+  }
+
+  def log[F[_] : Monad](logF: F[Unit]):FlowT[F,Unit] = {
+    EitherT(Monad[F].map(logF)(x => x.asRight[Throwable]))
   }
 }

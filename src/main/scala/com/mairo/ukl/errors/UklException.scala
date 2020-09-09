@@ -1,7 +1,8 @@
 package com.mairo.ukl.errors
 
+import com.mairo.ukl.domains.PlayerDomains.Player
+
 object UklException {
 
-  case class LoadConfigError(msg: String) extends RuntimeException(msg)
-
+  case class DbException(cause:Throwable) extends RuntimeException(cause)
 }

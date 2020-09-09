@@ -3,7 +3,8 @@ package com.mairo.ukl
 import cats.Monad
 import cats.effect.{ConcurrentEffect, ContextShift, Sync, Timer}
 import cats.implicits._
-import com.mairo.ukl.utils.ConfigProvider
+import com.mairo.ukl.repositories.PlayerRepository
+import com.mairo.ukl.utils.{ConfigProvider, TransactorProvider}
 import fs2.Stream
 import io.chrisdavenport.log4cats.SelfAwareStructuredLogger
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
@@ -15,17 +16,20 @@ import org.http4s.server.middleware.Logger
 import scala.concurrent.ExecutionContext.global
 
 object UklServer {
-  implicit def unsafeLogger[F[_]: Sync]: SelfAwareStructuredLogger[F] = Slf4jLogger.getLogger[F]
+  implicit def unsafeLogger[F[_] : Sync]: SelfAwareStructuredLogger[F] = Slf4jLogger.getLogger[F]
 
 
-  def stream[F[_]: ConcurrentEffect](implicit T: Timer[F],
-                                     C: ContextShift[F],
-                                     M: Monad[F]): Stream[F, Nothing] = {
+  def stream[F[_] : ConcurrentEffect](implicit T: Timer[F],
+                                      C: ContextShift[F],
+                                      M: Monad[F]): Stream[F, Nothing] = {
     for {
       client <- BlazeClientBuilder[F](global).stream
-      helloWorldAlg = HelloWorld.impl[F]
       config = ConfigProvider.provideConfig
-      jokeAlg = Jokes.impl[F](client,config)
+      xa = TransactorProvider.hikariTransactor(config)
+      playerRepo = PlayerRepository.impl(xa)
+
+      helloWorldAlg = HelloWorld.impl[F]
+      jokeAlg = Jokes.impl[F](config, client, unsafeLogger, playerRepo)
 
       // Combine Service Routes into an HttpApp.
       // Can also be done via a Router if you
@@ -33,11 +37,11 @@ object UklServer {
       // in the underlying routes.
       httpApp = (
         UklRoutes.helloWorldRoutes[F](helloWorldAlg) <+>
-        UklRoutes.jokeRoutes[F](jokeAlg)
-      ).orNotFound
+          UklRoutes.jokeRoutes[F](jokeAlg)
+        ).orNotFound
 
       // With Middlewares in place
-      finalHttpApp = Logger.httpApp(true, true)(httpApp)
+      finalHttpApp = Logger.httpApp(logHeaders = true, logBody = true)(httpApp)
 
       exitCode <- BlazeServerBuilder[F](global)
         .bindHttp(8080, "0.0.0.0")

@@ -10,22 +10,31 @@ lazy val root = (project in file("."))
     version := "0.0.1-SNAPSHOT",
     scalaVersion := "2.13.2",
     libraryDependencies ++= Seq(
-      "org.http4s"      %% "http4s-blaze-server" % Http4sVersion,
-      "org.http4s"      %% "http4s-blaze-client" % Http4sVersion,
-      "org.http4s"      %% "http4s-circe"        % Http4sVersion,
-      "org.http4s"      %% "http4s-dsl"          % Http4sVersion,
-      "io.circe"        %% "circe-generic"       % CirceVersion,
-      "io.circe"        %% "circe-literal"       % CirceVersion      % "it,test",
-      "io.circe"        %% "circe-optics"        % CirceVersion      % "it",
-      "org.specs2"      %% "specs2-core"         % Specs2Version     % "test",
-      "ch.qos.logback"  %  "logback-classic"     % LogbackVersion,
+      "org.http4s" %% "http4s-blaze-server" % Http4sVersion,
+      "org.http4s" %% "http4s-blaze-client" % Http4sVersion,
+      "org.http4s" %% "http4s-circe" % Http4sVersion,
+      "org.http4s" %% "http4s-dsl" % Http4sVersion,
+
+      "io.circe" %% "circe-generic" % CirceVersion,
+      "io.circe" %% "circe-literal" % CirceVersion % "it,test",
+      "io.circe" %% "circe-optics" % CirceVersion % "it",
+
+      "ch.qos.logback" % "logback-classic" % LogbackVersion,
       "io.chrisdavenport" %% "log4cats-slf4j" % "1.1.1",
       "com.github.pureconfig" %% "pureconfig" % "0.13.0",
 
+      "mysql" % "mysql-connector-java" % "8.0.11",
+      "org.tpolecat" %% "doobie-core" % "0.9.0",
+      "org.tpolecat" %% "doobie-hikari" % "0.9.0", // HikariCP transactor.
+      "org.tpolecat" %% "doobie-specs2" % "0.9.0" % "test", // Specs2 support for typechecking statements.
+      "org.tpolecat" %% "doobie-scalatest" % "0.9.0" % "test", // ScalaTest support for typechecking statements.
+
+      "org.specs2" %% "specs2-core" % Specs2Version % "test",
+
 
     ),
-    addCompilerPlugin("org.typelevel" %% "kind-projector"     % "0.10.3"),
-    addCompilerPlugin("com.olegpy"    %% "better-monadic-for" % "0.3.1")
+    addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3"),
+    addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
   )
 
 scalacOptions ++= Seq(
