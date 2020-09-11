@@ -4,9 +4,10 @@ import cats.effect.Sync
 import cats.implicits._
 import cats.{Applicative, Monad}
 import com.mairo.ukl.repositories.PlayerRepository
+import com.mairo.ukl.services.KafkaProducer
 import com.mairo.ukl.utils.ConfigProvider.Config
 import com.mairo.ukl.utils.Flow
-import com.mairo.ukl.utils.Flow.Flow
+import com.mairo.ukl.utils.Flow.Result
 import io.chrisdavenport.log4cats.Logger
 import io.circe.generic.semiauto._
 import io.circe.{Decoder, Encoder}
@@ -18,7 +19,7 @@ import org.http4s.implicits._
 import org.http4s.{EntityDecoder, EntityEncoder}
 
 trait Jokes[F[_]] {
-  def get: Flow[F, Jokes.Joke]
+  def get: F[Result[Jokes.Joke]]
 }
 
 object Jokes {
@@ -45,14 +46,15 @@ object Jokes {
 
     import dsl._
 
-    def get: Flow[F, Jokes.Joke] = {
+    def get: F[Result[Jokes.Joke]] = {
       val x: F[Joke] = C.expect[Joke](GET(uri"https://icanhazdadjoke.com/"))
         .adaptError { case t => JokeError(t) } // Prevent Client Json Decoding Failure Leaking
 
       val result = for {
-        all <- Flow.fromFlow(PR.findAll)
+        all <- PR.listAll
         _ <- Flow.log(LOG.info(s"Found ${all.size} players"))
         res <- Flow.fromF(x)
+        _ <- KafkaProducer.writeToKafka(s"FOUND JOKE: ${res.toString}")
       } yield res
 
       result.value

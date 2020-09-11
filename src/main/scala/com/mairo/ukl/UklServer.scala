@@ -4,6 +4,7 @@ import cats.Monad
 import cats.effect.{ConcurrentEffect, ContextShift, Sync, Timer}
 import cats.implicits._
 import com.mairo.ukl.repositories.PlayerRepository
+import com.mairo.ukl.services.KafkaConsumer
 import com.mairo.ukl.utils.{ConfigProvider, TransactorProvider}
 import fs2.Stream
 import io.chrisdavenport.log4cats.SelfAwareStructuredLogger
@@ -27,10 +28,9 @@ object UklServer {
       config = ConfigProvider.provideConfig
       xa = TransactorProvider.hikariTransactor(config)
       playerRepo = PlayerRepository.impl(xa)
-
       helloWorldAlg = HelloWorld.impl[F]
+      kafkaConsumer = KafkaConsumer.runConsumer()
       jokeAlg = Jokes.impl[F](config, client, unsafeLogger, playerRepo)
-
       // Combine Service Routes into an HttpApp.
       // Can also be done via a Router if you
       // want to extract a segments not checked
@@ -42,7 +42,6 @@ object UklServer {
 
       // With Middlewares in place
       finalHttpApp = Logger.httpApp(logHeaders = true, logBody = true)(httpApp)
-
       exitCode <- BlazeServerBuilder[F](global)
         .bindHttp(8080, "0.0.0.0")
         .withHttpApp(finalHttpApp)

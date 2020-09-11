@@ -33,8 +33,25 @@ object PlayerQueries {
       .query[Player]
   }
 
+  def getPlayerById(id: Long): doobie.Query0[Player] = {
+    sql"SELECT * FROM player WHERE player.id = $id LIMIT 1"
+      .query[Player]
+  }
+
   def insertPlayer(id: Long, surname: String, tid: Option[String], cid: Option[String], admin: Boolean): doobie.Update0 = {
     sql"INSERT into player (id, surname, tid, cid, admin) VALUES ($id, $surname, $tid, $cid, $admin)"
+      .update
+  }
+
+  def updatePlayer(player: Player): doobie.Update0 = {
+    sql"""
+         |UPDATE player
+         |SET surname=${player.surname},
+         | tid = ${player.tid},
+         | cid = ${player.cid},
+         | admin = ${player.admin}
+         | WHERE id = ${player.id}
+    """.stripMargin
       .update
   }
 

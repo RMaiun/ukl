@@ -26,9 +26,10 @@ lazy val root = (project in file("."))
       "mysql" % "mysql-connector-java" % "8.0.11",
       "org.tpolecat" %% "doobie-core" % "0.9.0",
       "org.tpolecat" %% "doobie-hikari" % "0.9.0", // HikariCP transactor.
-      "org.tpolecat" %% "doobie-specs2" % "0.9.0" % "test", // Specs2 support for typechecking statements.
-      "org.tpolecat" %% "doobie-scalatest" % "0.9.0" % "test", // ScalaTest support for typechecking statements.
 
+      "org.apache.kafka" %% "kafka" % "2.6.0",
+
+      "org.scalatest" %% "scalatest" % "3.2.2" % Test,
       "org.specs2" %% "specs2-core" % Specs2Version % "test",
 
 
@@ -42,6 +43,7 @@ scalacOptions ++= Seq(
   "-encoding", "UTF-8",
   "-language:higherKinds",
   "-language:postfixOps",
+  "-language:implicitConversions",
   "-feature",
-  "-Xfatal-warnings",
+  "-Xfatal-warnings"
 )

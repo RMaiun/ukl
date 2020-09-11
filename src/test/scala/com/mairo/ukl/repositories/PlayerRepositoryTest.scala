@@ -25,11 +25,11 @@ class PlayerRepositoryTest extends AnyFlatSpec
   val transactor: HikariTransactor[IO] = TransactorProvider.hikariTransactor[IO](config, allowPublicKeyRetrieval = true)
   val playerRepo: PlayerRepository[IO] = PlayerRepository.impl[IO](transactor)
 
-  "PlayerRepository" should "insert new player into mysql" in {
-    val result: Result[Long] = createUser(testPid, testName)
+  "PlayerRepository" should "insert new player into db" in {
+    val result: Result[Long] = createPlayer(testPid, testName)
     result.isRight should be(true)
     result.getOrElse(fail("either was not Right!")) shouldBe 999
-    val foundPlayer = playerRepo.getPlayer(testName).unsafeRunSync()
+    val foundPlayer = playerRepo.getByName(testName).value.unsafeRunSync()
     foundPlayer.isRight should be(true)
     val foundResult = foundPlayer.getOrElse(fail("either was not Right!"))
     foundResult.isDefined should be(true)
@@ -37,8 +37,8 @@ class PlayerRepositoryTest extends AnyFlatSpec
   }
 
   it should "throw exception on duplicate player id" in {
-    val result: Result[Long] = createUser(testPid, testName)
-    val expectedError = createUser(testPid, testName)
+    val result: Result[Long] = createPlayer(testPid, testName)
+    val expectedError = createPlayer(testPid, testName)
     expectedError.isLeft should be(true)
     inside(expectedError) {
       case Left(err) =>
@@ -47,31 +47,68 @@ class PlayerRepositoryTest extends AnyFlatSpec
     }
   }
 
+  it should "throw exception on get user by id which not exist" in {
+    val result: Result[Long] = createPlayer(testPid, testName)
+    val foundPlayer = playerRepo.getById(1000).value.unsafeRunSync()
+    foundPlayer.isRight should be(true)
+    val foundResult = foundPlayer.getOrElse(fail("either was not Right!"))
+    foundResult shouldBe None
+  }
+
+  it should "update existed player in db" in {
+    val result: Result[Long] = createPlayer(testPid, testName)
+    result.isRight should be(true)
+
+    val updPlayer = Player(testPid, "Test4", None, None, admin = true)
+    val updatedPlayer = playerRepo.update(updPlayer).value.unsafeRunSync()
+    updatedPlayer.isRight should be(true)
+
+    val foundPlayer = playerRepo.getById(testPid).value.unsafeRunSync()
+    foundPlayer.isRight should be(true)
+    val foundResult = foundPlayer.getOrElse(fail("either was not Right!"))
+    foundResult.isDefined should be(true)
+    foundResult.get shouldBe updPlayer
+  }
+
   it should "find users by surnames" in {
-    createUser(testPid, testName)
-    createUser(100, "Test2")
-    createUser(101, "Test3")
-    val result = playerRepo.findPlayers(List(testName, "Test2")).unsafeRunSync()
+    createPlayer(testPid, testName)
+    createPlayer(100, "Test2")
+    createPlayer(101, "Test3")
+    val result = playerRepo.findPlayers(List(testName, "Test2")).value.unsafeRunSync()
     result.isRight should be(true)
     result.getOrElse(fail("either was not Right!")).size shouldBe 2
   }
 
+  it should "find user by id" in {
+    createPlayer(testPid, testName)
+    createPlayer(100, "Test2")
+    val result = playerRepo.getById(100).value.unsafeRunSync()
+    result.isRight should be(true)
+    val maybePlayer = result.getOrElse(fail("either was not Right!"))
+    maybePlayer.isDefined shouldBe true
+    maybePlayer.get.surname shouldBe "Test2"
+  }
+
   it should "clear table" in {
-    createUser(testPid, testName)
-    createUser(100, "Test2")
-    createUser(101, "Test3")
-    playerRepo.clearTable.unsafeRunSync()
-    val result = playerRepo.findPlayers(List(testName)).unsafeRunSync()
+    createPlayer(testPid, testName)
+    createPlayer(100, "Test2")
+    createPlayer(101, "Test3")
+    playerRepo.clearTable.value.unsafeRunSync()
+    val result = playerRepo.findPlayers(List(testName)).value.unsafeRunSync()
     result.isRight should be(true)
     result.getOrElse(fail("either was not Right!")).size shouldBe 0
   }
 
-  private def createUser(id: Long, name: String): Result[Long] = {
+  private def createPlayer(id: Long, name: String): Result[Long] = {
     val player = Player(id, name, Some("9z10y"), None, admin = false)
-    playerRepo.savePlayer(player).unsafeRunSync()
+    playerRepo.insert(player).value.unsafeRunSync()
   }
 
   override protected def afterEach(): Unit = {
-    playerRepo.clearTable.unsafeRunSync()
+    playerRepo.clearTable.value.unsafeRunSync()
+  }
+
+  override protected def beforeEach(): Unit = {
+    playerRepo.clearTable.value.unsafeRunSync()
   }
 }
