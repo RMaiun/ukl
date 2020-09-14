@@ -22,6 +22,7 @@ lazy val root = (project in file("."))
       "ch.qos.logback" % "logback-classic" % LogbackVersion,
       "io.chrisdavenport" %% "log4cats-slf4j" % "1.1.1",
       "com.github.pureconfig" %% "pureconfig" % "0.13.0",
+      "com.rabbitmq" % "amqp-client" % "5.9.0",
 
       "mysql" % "mysql-connector-java" % "8.0.11",
       "org.tpolecat" %% "doobie-core" % "0.9.0",

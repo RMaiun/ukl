@@ -3,8 +3,8 @@ package com.mairo.ukl
 import cats.effect.Sync
 import cats.implicits._
 import cats.{Applicative, Monad}
+import com.mairo.ukl.rabbit.RabbitProducer
 import com.mairo.ukl.repositories.PlayerRepository
-import com.mairo.ukl.services.KafkaProducer
 import com.mairo.ukl.utils.ConfigProvider.Config
 import com.mairo.ukl.utils.Flow
 import com.mairo.ukl.utils.Flow.Result
@@ -54,7 +54,7 @@ object Jokes {
         all <- PR.listAll
         _ <- Flow.log(LOG.info(s"Found ${all.size} players"))
         res <- Flow.fromF(x)
-        _ <- KafkaProducer.writeToKafka(s"FOUND JOKE: ${res.toString}")
+        _ <- RabbitProducer.publish(s"FOUND JOKE: ${res.toString}")
       } yield res
 
       result.value
