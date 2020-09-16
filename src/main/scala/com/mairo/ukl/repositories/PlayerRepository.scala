@@ -3,7 +3,7 @@ package com.mairo.ukl.repositories
 import cats.Monad
 import cats.data.NonEmptyList
 import cats.effect.Sync
-import com.mairo.ukl.domains.PlayerDomains.Player
+import com.mairo.ukl.domains.Player.Player
 import com.mairo.ukl.domains.PlayerQueries
 import com.mairo.ukl.utils.Flow
 import com.mairo.ukl.utils.Flow.Flow

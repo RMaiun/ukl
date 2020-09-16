@@ -1,7 +1,7 @@
 package com.mairo.ukl.domains
 
 import cats.data.NonEmptyList
-import com.mairo.ukl.domains.PlayerDomains.Player
+import com.mairo.ukl.domains.Player.Player
 import doobie._
 import doobie.implicits._
 

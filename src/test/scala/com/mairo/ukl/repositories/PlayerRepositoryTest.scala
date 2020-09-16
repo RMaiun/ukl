@@ -1,7 +1,7 @@
 package com.mairo.ukl.repositories
 
 import cats.effect.{ContextShift, IO}
-import com.mairo.ukl.domains.PlayerDomains.Player
+import com.mairo.ukl.domains.Player.Player
 import com.mairo.ukl.utils.Flow.Result
 import com.mairo.ukl.utils.{ConfigProvider, TransactorProvider}
 import doobie.hikari.HikariTransactor

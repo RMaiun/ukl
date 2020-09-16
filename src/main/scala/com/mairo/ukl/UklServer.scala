@@ -5,6 +5,7 @@ import cats.effect.{ConcurrentEffect, ContextShift, Sync, Timer}
 import cats.implicits._
 import com.mairo.ukl.rabbit.{RabbitConfigurer, RabbitConsumer}
 import com.mairo.ukl.repositories.PlayerRepository
+import com.mairo.ukl.services.{PlayerService, UserRightsService}
 import com.mairo.ukl.utils.{ConfigProvider, TransactorProvider}
 import fs2.Stream
 import io.chrisdavenport.log4cats.SelfAwareStructuredLogger
@@ -27,9 +28,10 @@ object UklServer {
       client <- BlazeClientBuilder[F](global).stream
       config = ConfigProvider.provideConfig
       xa = TransactorProvider.hikariTransactor(config, allowPublicKeyRetrieval = true)
-      playerRepo = PlayerRepository.impl(xa)
+      playerRepo = PlayerRepository.impl[F](xa)
+      userRightsService = UserRightsService.impl[F](playerRepo)
+      playerService = PlayerService.impl[F](playerRepo, userRightsService)
       helloWorldAlg = HelloWorld.impl[F]
-      rabbitConnection = RabbitConfigurer.initRabbit()
       consumerExecutor = RabbitConsumer.startConsumer()
       jokeAlg = Jokes.impl[F](config, client, unsafeLogger, playerRepo)
       // Combine Service Routes into an HttpApp.
