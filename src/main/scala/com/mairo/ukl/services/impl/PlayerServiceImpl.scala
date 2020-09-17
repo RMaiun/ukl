@@ -52,8 +52,8 @@ class PlayerServiceImpl[F[_] : Monad](PlayerRepo: PlayerRepository[F],
   private def checkPlayerNotExist(surname: String): Flow[F, Unit] = {
     PlayerRepo.getByName(surname.toLowerCase)
       .flatMap {
-        case Some(p) => Flow.pureLeft(PlayerAlreadyExistsException(p.id))
-        case None => Flow.pureRight(())
+        case Some(p) => Flow.error(PlayerAlreadyExistsException(p.id))
+        case None => Flow.pure(())
       }
   }
 }

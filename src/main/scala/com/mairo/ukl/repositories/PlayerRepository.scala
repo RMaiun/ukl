@@ -34,7 +34,7 @@ object PlayerRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow.fromFResult(result)
+      Flow.fromFRes(result)
     }
 
     override def findPlayers(surnames: List[String]): Flow[F, List[Player]] = {
@@ -45,7 +45,7 @@ object PlayerRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow.fromFResult(result)
+      Flow.fromFRes(result)
     }
 
     override def getById(id: Long): Flow[F, Option[Player]] = {
@@ -54,7 +54,7 @@ object PlayerRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow.fromFResult(result)
+      Flow.fromFRes(result)
     }
 
     override def getByName(name: String): Flow[F, Option[Player]] = {
@@ -63,7 +63,7 @@ object PlayerRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow.fromFResult(result)
+      Flow.fromFRes(result)
     }
 
     override def insert(player: Player): Flow[F, Long] = {
@@ -72,7 +72,7 @@ object PlayerRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow.fromFResult(result)
+      Flow.fromFRes(result)
     }
 
     override def update(data: Player): Flow[F, Player] = {
@@ -81,7 +81,7 @@ object PlayerRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow.fromFResult(Monad[F].map(result)(e => e.map(v => data)))
+      Flow.fromFRes(Monad[F].map(result)(e => e.map(v => data)))
     }
 
     override def deleteById(id: Long): Flow[F, Unit] = {
@@ -90,7 +90,7 @@ object PlayerRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow.fromFResult(Monad[F].map(result)(_.map(_ => ())))
+      Flow.fromFRes(Monad[F].map(result)(_.map(_ => ())))
     }
 
     override def findLastId: Flow[F, Long] = {
@@ -99,7 +99,7 @@ object PlayerRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow.fromFResult(result)
+      Flow.fromFRes(result)
     }
 
     override def clearTable: Flow[F, Unit] = {

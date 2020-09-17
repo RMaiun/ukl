@@ -9,6 +9,7 @@ object RabbitConsumer {
   def startConsumer(): Channel = {
     val connection: Connection = RabbitConfigurer.factory.newConnection(Executors.newCachedThreadPool())
     val channel = connection.createChannel()
+    channel.queueDeclare(RabbitConfigurer.EXCHANGE, false, false, false, null)
 
     val callback: DeliverCallback = (consumerTag: String, delivery: Delivery) => {
       val message = new String(delivery.getBody, "UTF-8")

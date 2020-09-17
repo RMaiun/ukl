@@ -3,7 +3,7 @@ package com.mairo.ukl
 import cats.Monad
 import cats.effect.{ConcurrentEffect, ContextShift, Sync, Timer}
 import cats.implicits._
-import com.mairo.ukl.rabbit.{RabbitConfigurer, RabbitConsumer}
+import com.mairo.ukl.rabbit.{RabbitConsumer, RabbitTester}
 import com.mairo.ukl.repositories.PlayerRepository
 import com.mairo.ukl.services.{PlayerService, UserRightsService}
 import com.mairo.ukl.utils.{ConfigProvider, TransactorProvider}
@@ -25,15 +25,24 @@ object UklServer {
                                       C: ContextShift[F],
                                       M: Monad[F]): Stream[F, Nothing] = {
     for {
+      //general
       client <- BlazeClientBuilder[F](global).stream
       config = ConfigProvider.provideConfig
       xa = TransactorProvider.hikariTransactor(config, allowPublicKeyRetrieval = true)
+
+      //repositories
       playerRepo = PlayerRepository.impl[F](xa)
+
+      //services
       userRightsService = UserRightsService.impl[F](playerRepo)
       playerService = PlayerService.impl[F](playerRepo, userRightsService)
       helloWorldAlg = HelloWorld.impl[F]
-      consumerExecutor = RabbitConsumer.startConsumer()
       jokeAlg = Jokes.impl[F](config, client, unsafeLogger, playerRepo)
+
+      //rabbitMQ consumers
+      consumerExecutor = RabbitConsumer.startConsumer()
+      rabbitTester = RabbitTester.startRepeatablePlayersCheck(playerService)
+
       // Combine Service Routes into an HttpApp.
       // Can also be done via a Router if you
       // want to extract a segments not checked

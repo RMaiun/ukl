@@ -12,7 +12,7 @@ object RabbitProducer {
   private val channel = connection.createChannel()
 
   def publish[F[_] : Sync](value: String): Flow[F, Unit] = {
-    Flow.fromFResult(Sync[F].delay(
+    Flow.fromFRes(Sync[F].delay(
       Try(channel.basicPublish("", RabbitConfigurer.EXCHANGE, false, false, null, value.getBytes))
         .toEither
     ))
