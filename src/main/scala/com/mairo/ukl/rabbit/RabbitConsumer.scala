@@ -2,6 +2,7 @@ package com.mairo.ukl.rabbit
 
 import java.util.concurrent.Executors
 
+import com.mairo.ukl.rabbit.RabbitConfigurer.EXCHANGE_NAME
 import com.rabbitmq.client._
 
 object RabbitConsumer {
@@ -9,19 +10,31 @@ object RabbitConsumer {
   def startConsumer(): Channel = {
     val connection: Connection = RabbitConfigurer.factory.newConnection(Executors.newCachedThreadPool())
     val channel = connection.createChannel()
-    channel.queueDeclare(RabbitConfigurer.EXCHANGE, false, false, false, null)
+    channel.exchangeDeclare(EXCHANGE_NAME, "direct")
+    channel.queueDeclare("listPlayersQueue", false, false, false, null)
+    channel.queueDeclare("addPlayerQueue", false, false, false, null)
+    channel.queueBind("listPlayersQueue", EXCHANGE_NAME, RabbitConfigurer.LIST_PLAYERS_RK)
+    channel.queueBind("addPlayerQueue", EXCHANGE_NAME, RabbitConfigurer.ADD_PLAYER_RK)
 
-    val callback: DeliverCallback = (consumerTag: String, delivery: Delivery) => {
-      val message = new String(delivery.getBody, "UTF-8")
-      System.out.println(" [x] Received '" + message + "'")
-    }
-
-    val shutdownSignalCallback = new ConsumerShutdownSignalCallback {
-      override def handleShutdownSignal(consumerTag: String, sig: ShutdownSignalException): Unit = {
-        sig.printStackTrace()
+    val consumer1 = new DefaultConsumer(channel){
+      override def handleDelivery(consumerTag: String, envelope: Envelope, properties: AMQP.BasicProperties, body: Array[Byte]): Unit = {
+        val message = new String(body, "UTF-8")
+        println(s"${Thread.currentThread().getName} [LIST PLAYERS] Received '" + message + "'")
       }
     }
-    channel.basicConsume(RabbitConfigurer.EXCHANGE, true, callback, shutdownSignalCallback)
+
+    val channel2 = connection.createChannel()
+
+    val consumer2 = new DefaultConsumer(channel2){
+      override def handleDelivery(consumerTag: String, envelope: Envelope, properties: AMQP.BasicProperties, body: Array[Byte]): Unit = {
+        val message = new String(body, "UTF-8")
+        println(s"${Thread.currentThread().getName} [ADD PLAYER] Received '" + message + "'")
+      }
+    }
+    channel.basicConsume("listPlayersQueue", true, consumer1)
+
+    channel2.basicConsume("addPlayerQueue", true, consumer2)
+
     channel
   }
 }

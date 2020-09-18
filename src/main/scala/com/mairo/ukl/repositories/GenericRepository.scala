@@ -15,9 +15,9 @@ trait GenericRepository[F[_], T] {
 
   def update(data: T): Flow[F, T]
 
-  def deleteById(id: Long): Flow[F, Unit]
+  def deleteById(id: Long): Flow[F, Long]
 
-  def clearTable: Flow[F, Unit]
+  def clearTable: Flow[F, Int]
 }
 
 object GenericRepository {

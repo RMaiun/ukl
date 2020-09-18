@@ -7,7 +7,7 @@ import com.mairo.ukl.rabbit.RabbitProducer
 import com.mairo.ukl.repositories.PlayerRepository
 import com.mairo.ukl.utils.ConfigProvider.Config
 import com.mairo.ukl.utils.Flow
-import com.mairo.ukl.utils.Flow.Result
+import com.mairo.ukl.utils.Flow.{FlowLog, Result}
 import io.chrisdavenport.log4cats.Logger
 import io.circe.generic.semiauto._
 import io.circe.{Decoder, Encoder}
@@ -41,20 +41,20 @@ object Jokes {
 
   final case class JokeError(e: Throwable) extends RuntimeException
 
-  def impl[F[_] : Sync : Monad](config: Config, C: Client[F], LOG: Logger[F], PR: PlayerRepository[F]): Jokes[F] = new Jokes[F] {
+  def impl[F[_] : Sync : Monad:Logger](config: Config, C: Client[F], PR: PlayerRepository[F]): Jokes[F] = new Jokes[F] {
     val dsl: Http4sClientDsl[F] = new Http4sClientDsl[F] {}
 
     import dsl._
 
     def get: F[Result[Jokes.Joke]] = {
-      val x: F[Joke] = C.expect[Joke](GET(uri"https://icanhazdadjoke.com/"))
-        .adaptError { case t => JokeError(t) } // Prevent Client Json Decoding Failure Leaking
+      val x: F[Either[Throwable, Joke]] = C.expect[Joke](GET(uri"https://icanhazdadjoke.com/"))
+        .attempt
 
       val result = for {
         all <- PR.listAll
-        _ <- Flow.log(LOG.info(s"Found ${all.size} players"))
-        res <- Flow.fromF(x)
-        _ <- RabbitProducer.publish(s"FOUND JOKE: ${res.toString}")
+        _ <- FlowLog.info(s"Found ${all.size} players")
+        res <- Flow(x)
+        _ <- RabbitProducer.publish(s"FOUND JOKE: ${res.toString}", "")
       } yield res
 
       result.value

@@ -17,30 +17,31 @@ object RabbitTester {
   def startRepeatablePlayersCheck[F[_] : Monad : Timer : Sync : Logger : ConcurrentEffect](PS: PlayerService[F]): ExecutorService = {
     val pool: ExecutorService = Executors.newSingleThreadExecutor()
     pool.execute(() => {
-      ConcurrentEffect[F].toIO(onStartDelay >> checkPlayers(PS)).unsafeRunSync()
+      ConcurrentEffect[F].toIO(onStartDelay >> checkPlayers(1, PS)).unsafeRunSync()
     })
     pool
   }
 
   def schedule[F[_] : Monad : Timer : Logger]: F[Unit] = {
-    Logger[F].info("Schedule for 3 second") >> Timer[F].sleep(FiniteDuration(3, TimeUnit.SECONDS))
+    Logger[F].info("Schedule for 3 second") >> Timer[F].sleep(FiniteDuration(50, TimeUnit.MILLISECONDS))
   }
 
   def onStartDelay[F[_] : Timer : Logger : Monad]: F[Unit] = {
     Logger[F].info("On Start Delay") >> Timer[F].sleep(FiniteDuration(5, TimeUnit.SECONDS))
   }
 
-  def checkPlayers[F[_] : Monad : Timer : Logger : Sync](PS: PlayerService[F]): F[Unit] = {
+  def checkPlayers[F[_] : Monad : Timer : Logger : Sync](num: Int, PS: PlayerService[F]): F[Unit] = {
     val action = (for {
-      _ <- Flow.log(Logger[F].info("Search for players"))
+      _ <- FlowLog.info("Search for players")
       dtoOut <- PS.findAllPlayers
-      _ <- FlowLog.info(s"Going to produce ${dtoOut.players.size} players")
-      _ <- RabbitProducer.publish(dtoOut.toString)
-      _ <- Flow.log(Logger[F].info(s"Players where sent to RabbitMQ"))
+      key = if (num % 2 == 0) RabbitConfigurer.LIST_PLAYERS_RK else RabbitConfigurer.ADD_PLAYER_RK
+      _ <- FlowLog.info(s"Going to produce msg for key= $key")
+      _ <- RabbitProducer.publish(dtoOut.toString, key)
+      _ <- FlowLog.info(s"Players where sent to RabbitMQ")
     } yield ()
       ).value
 
-    action >> schedule >> checkPlayers(PS)
+    action >> schedule >> checkPlayers(num + 1, PS)
   }
 
 }

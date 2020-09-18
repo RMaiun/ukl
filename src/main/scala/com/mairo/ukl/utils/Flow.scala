@@ -23,6 +23,10 @@ object Flow {
     }
   }
 
+  def apply[F[_], T](f: F[Result[T]]): Flow[F, T] = {
+    EitherT(f)
+  }
+
   def toRightResult[F[_] : Applicative, R](data: R): F[Result[R]] = {
     Applicative[F].pure(data.asRight[Throwable])
   }
@@ -31,8 +35,8 @@ object Flow {
     Applicative[F].pure(data.asLeft[R])
   }
 
-  def fromResult[F[_] : Applicative, T](data: Result[T]): Flow[F, T] = {
-    EitherT(Applicative[F].pure(data))
+  def fromRes[F[_] : Applicative, T](data: Result[T]): Flow[F, T] = {
+    EitherT.fromEither[F](data)
   }
 
   def pure[F[_] : Applicative, T](data: T): Flow[F, T] = {
@@ -43,19 +47,7 @@ object Flow {
     EitherT(Applicative[F].pure(data.asLeft[R]))
   }
 
-  def liftRes[F[_] : Applicative, T](data: Result[T]): Flow[F, T] = {
-    EitherT(Applicative[F].pure(data))
-  }
-
-  def fromFRes[F[_], T](f: F[Result[T]]): Flow[F, T] = {
-    EitherT(f)
-  }
-
   def fromF[F[_] : Monad, T](fa: F[T]): Flow[F, T] = {
     EitherT(Monad[F].map(fa)(x => x.asRight[Throwable]))
-  }
-
-  def log[F[_] : Monad](logF: F[Unit]): Flow[F, Unit] = {
-    EitherT(Monad[F].map(logF)(x => x.asRight[Throwable]))
   }
 }

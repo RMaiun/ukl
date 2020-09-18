@@ -34,7 +34,7 @@ object PlayerRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow.fromFRes(result)
+      Flow(result)
     }
 
     override def findPlayers(surnames: List[String]): Flow[F, List[Player]] = {
@@ -45,7 +45,7 @@ object PlayerRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow.fromFRes(result)
+      Flow(result)
     }
 
     override def getById(id: Long): Flow[F, Option[Player]] = {
@@ -54,7 +54,7 @@ object PlayerRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow.fromFRes(result)
+      Flow(result)
     }
 
     override def getByName(name: String): Flow[F, Option[Player]] = {
@@ -63,7 +63,7 @@ object PlayerRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow.fromFRes(result)
+      Flow(result)
     }
 
     override def insert(player: Player): Flow[F, Long] = {
@@ -72,7 +72,7 @@ object PlayerRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow.fromFRes(result)
+      Flow(result)
     }
 
     override def update(data: Player): Flow[F, Player] = {
@@ -81,16 +81,16 @@ object PlayerRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow.fromFRes(Monad[F].map(result)(e => e.map(v => data)))
+      Flow(Monad[F].map(result)(e => e.map(v => data)))
     }
 
-    override def deleteById(id: Long): Flow[F, Unit] = {
+    override def deleteById(id: Long): Flow[F, Long] = {
       val result = PlayerQueries.deletePlayerById(id)
         .run
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow.fromFRes(Monad[F].map(result)(_.map(_ => ())))
+      Flow(Monad[F].map(result)(_.map(_ => id)))
     }
 
     override def findLastId: Flow[F, Long] = {
@@ -99,16 +99,16 @@ object PlayerRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow.fromFRes(result)
+      Flow(result)
     }
 
-    override def clearTable: Flow[F, Unit] = {
+    override def clearTable: Flow[F, Int] = {
       val result = PlayerQueries.clearTable
         .run
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow.fromF(Monad[F].map(result)(_ => ()))
+      Flow.fromF(result)
     }
   }
 

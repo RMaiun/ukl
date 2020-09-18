@@ -3,8 +3,10 @@ package com.mairo.ukl.rabbit
 import com.rabbitmq.client.{Channel, Connection, ConnectionFactory}
 
 object RabbitConfigurer {
-
-  val EXCHANGE = "hello"
+  val EXCHANGE_NAME = "ukl_exchange"
+  val INPUT_QUEUE = "input"
+  val LIST_PLAYERS_RK = "list_players"
+  val ADD_PLAYER_RK = "add_player"
 
   val factory = new ConnectionFactory
   factory.setUsername("rabbitmq")

@@ -25,7 +25,7 @@ object UserRightsService {
 
     private def checkAdminPermissions(players: List[Player], tid: String): Flow[F, Player] = {
       players.find(p => p.tid.contains(tid) && p.admin) match {
-        case Some(value) => Flow.fromFRes(Monad[F].pure(value.asRight[Throwable]))
+        case Some(value) => Flow(Monad[F].pure(value.asRight[Throwable]))
         case None => Flow.error(InvalidUserRightsException())
       }
 

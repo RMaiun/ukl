@@ -25,7 +25,7 @@ class PlayerServiceImpl[F[_] : Monad](PlayerRepo: PlayerRepository[F],
     val surnames = surnameList.map(_.toLowerCase())
     for {
       players <- PlayerRepo.findPlayers(surnames)
-      checkedPlayers <- Flow.fromResult(prepareCheckedPlayers(players, surnames))
+      checkedPlayers <- Flow.fromRes(prepareCheckedPlayers(players, surnames))
     } yield checkedPlayers
   }
 
