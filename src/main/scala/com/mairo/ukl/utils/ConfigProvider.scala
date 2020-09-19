@@ -24,6 +24,22 @@ object ConfigProvider {
                     db: DbConfig,
                     server: ServerConfig)
 
+  case class RabbitConfig(global: RabbitGlobalConfig,
+                          exName:String,
+                          exType:String,
+                          listPlayersQueue: QueueConfig,
+                          addPlayerQueue: QueueConfig,
+                          errorsQueue: QueueConfig
+)
+
+  case class RabbitGlobalConfig(username: String,
+                                password: String,
+                                host: String,
+                                virtualHost: String,
+                                port: Int)
+
+  case class QueueConfig(name: String, key: String)
+
   def provideConfig: Config = {
     ConfigSource.default.loadOrThrow[Config]
   }

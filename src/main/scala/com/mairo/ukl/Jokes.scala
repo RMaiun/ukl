@@ -41,7 +41,7 @@ object Jokes {
 
   final case class JokeError(e: Throwable) extends RuntimeException
 
-  def impl[F[_] : Sync : Monad:Logger](config: Config, C: Client[F], PR: PlayerRepository[F]): Jokes[F] = new Jokes[F] {
+  def impl[F[_] : Sync : Monad : Logger](config: Config, C: Client[F], PR: PlayerRepository[F]): Jokes[F] = new Jokes[F] {
     val dsl: Http4sClientDsl[F] = new Http4sClientDsl[F] {}
 
     import dsl._
@@ -54,7 +54,7 @@ object Jokes {
         all <- PR.listAll
         _ <- FlowLog.info(s"Found ${all.size} players")
         res <- Flow(x)
-        _ <- RabbitProducer.publish(s"FOUND JOKE: ${res.toString}", "")
+        _ <- RabbitProducer.publish(s"FOUND JOKE: ${res.toString}".asRight[Throwable], "")
       } yield res
 
       result.value

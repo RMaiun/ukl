@@ -28,7 +28,6 @@ object UserRightsService {
         case Some(value) => Flow(Monad[F].pure(value.asRight[Throwable]))
         case None => Flow.error(InvalidUserRightsException())
       }
-
     }
   }
 }

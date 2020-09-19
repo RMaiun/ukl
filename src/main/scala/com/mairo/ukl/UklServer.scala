@@ -27,30 +27,7 @@ object UklServer {
     for {
       //general
       client <- BlazeClientBuilder[F](global).stream
-      config = ConfigProvider.provideConfig
-      xa = TransactorProvider.hikariTransactor(config, allowPublicKeyRetrieval = true)
-
-      //repositories
-      playerRepo = PlayerRepository.impl[F](xa)
-
-      //services
-      userRightsService = UserRightsService.impl[F](playerRepo)
-      playerService = PlayerService.impl[F](playerRepo, userRightsService)
-      helloWorldAlg = HelloWorld.impl[F]
-      jokeAlg = Jokes.impl[F](config, client, unsafeLogger, playerRepo)
-
-      //rabbitMQ consumers
-      consumerExecutor = RabbitConsumer.startConsumer()
-      rabbitTester = RabbitTester.startRepeatablePlayersCheck(playerService)
-
-      // Combine Service Routes into an HttpApp.
-      // Can also be done via a Router if you
-      // want to extract a segments not checked
-      // in the underlying routes.
-      httpApp = (
-        UklRoutes.helloWorldRoutes[F](helloWorldAlg) <+>
-          UklRoutes.jokeRoutes[F](jokeAlg)
-        ).orNotFound
+      httpApp = Module.initHttpApp(client)
 
       // With Middlewares in place
       finalHttpApp = Logger.httpApp(logHeaders = true, logBody = true)(httpApp)

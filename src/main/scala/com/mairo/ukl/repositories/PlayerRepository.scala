@@ -108,7 +108,7 @@ object PlayerRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow.fromF(result)
+      Flow(result)
     }
   }
 

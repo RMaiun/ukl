@@ -1,40 +1,28 @@
 package com.mairo.ukl.rabbit
 
-import java.util.concurrent.Executors
-
-import com.mairo.ukl.rabbit.RabbitConfigurer.EXCHANGE_NAME
+import com.mairo.ukl.rabbit.RabbitConfigurer._
 import com.rabbitmq.client._
 
 object RabbitConsumer {
 
-  def startConsumer(): Channel = {
-    val connection: Connection = RabbitConfigurer.factory.newConnection(Executors.newCachedThreadPool())
+  def startConsumer(connection: Connection): Unit = {
     val channel = connection.createChannel()
-    channel.exchangeDeclare(EXCHANGE_NAME, "direct")
-    channel.queueDeclare("listPlayersQueue", false, false, false, null)
-    channel.queueDeclare("addPlayerQueue", false, false, false, null)
-    channel.queueBind("listPlayersQueue", EXCHANGE_NAME, RabbitConfigurer.LIST_PLAYERS_RK)
-    channel.queueBind("addPlayerQueue", EXCHANGE_NAME, RabbitConfigurer.ADD_PLAYER_RK)
 
-    val consumer1 = new DefaultConsumer(channel){
-      override def handleDelivery(consumerTag: String, envelope: Envelope, properties: AMQP.BasicProperties, body: Array[Byte]): Unit = {
-        val message = new String(body, "UTF-8")
-        println(s"${Thread.currentThread().getName} [LIST PLAYERS] Received '" + message + "'")
-      }
-    }
+    channel.basicConsume(listPlayersQR.name, true, consumer(channel, "[LIST PLAYERS]"))
 
     val channel2 = connection.createChannel()
+    channel2.basicConsume(addPlayerQR.name, true, consumer(channel2, "[ADD PLAYER]"))
 
-    val consumer2 = new DefaultConsumer(channel2){
+    val channel3 = connection.createChannel()
+    channel3.basicConsume(errorsQR.name, true, consumer(channel3, "[BLABLABLA]"))
+  }
+
+  def consumer(channel: Channel, logPrefix: String): Consumer = {
+    new DefaultConsumer(channel) {
       override def handleDelivery(consumerTag: String, envelope: Envelope, properties: AMQP.BasicProperties, body: Array[Byte]): Unit = {
         val message = new String(body, "UTF-8")
-        println(s"${Thread.currentThread().getName} [ADD PLAYER] Received '" + message + "'")
+        println(s"${Thread.currentThread().getName} $logPrefix Received '" + message + "'")
       }
     }
-    channel.basicConsume("listPlayersQueue", true, consumer1)
-
-    channel2.basicConsume("addPlayerQueue", true, consumer2)
-
-    channel
   }
 }
