@@ -3,7 +3,7 @@ package com.mairo.ukl
 import cats.Monad
 import cats.effect.{ConcurrentEffect, ContextShift, Timer}
 import cats.syntax.semigroupk._
-import com.mairo.ukl.rabbit.{RabbitConfigurer, RabbitConsumer, RabbitTester}
+import com.mairo.ukl.rabbit.{RabbitConfigurer, RabbitConsumer, RabbitProducer, RabbitTester}
 import com.mairo.ukl.repositories.PlayerRepository
 import com.mairo.ukl.services.{PlayerService, UserRightsService}
 import com.mairo.ukl.utils.{ConfigProvider, TransactorProvider}
@@ -17,22 +17,26 @@ object Module {
   def initHttpApp[F[_] : ConcurrentEffect : Monad : Logger](client: Client[F])(implicit T: Timer[F],
                                                                                C: ContextShift[F]): HttpApp[F] = {
     // general
-    val config = ConfigProvider.provideConfig
+    implicit val config: ConfigProvider.Config = ConfigProvider.provideConfig
     val transactor = TransactorProvider.hikariTransactor(config, allowPublicKeyRetrieval = true)
 
     // repositories
     val playerRepo = PlayerRepository.impl[F](transactor)
 
+    //rabbitMQ consumers
+    val factory = RabbitConfigurer.factory(config)
+    val connection = RabbitConfigurer.initRabbit(factory)
+    RabbitConsumer.startConsumer(connection)
+    val rabbitProducer = RabbitProducer.impl[F](factory)
+
     // services
     val userRightsService = UserRightsService.impl[F](playerRepo)
     val playerService = PlayerService.impl[F](playerRepo, userRightsService)
     val helloWorldAlg = HelloWorld.impl[F]
-    val jokeAlg = Jokes.impl[F](config, client, playerRepo)
+    val jokeAlg = Jokes.impl[F](config, client, playerRepo,rabbitProducer)
 
-    //rabbitMQ consumers
-    val connection = RabbitConfigurer.initRabbit()
-    RabbitConsumer.startConsumer(connection)
-    RabbitTester.startRepeatablePlayersCheck(playerService)
+    // for testing
+    RabbitTester.startRepeatablePlayersCheck(playerService,rabbitProducer)
 
     // http
     val httpApp = (UklRoutes.helloWorldRoutes[F](helloWorldAlg) <+>

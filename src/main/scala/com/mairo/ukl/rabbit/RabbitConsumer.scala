@@ -1,20 +1,21 @@
 package com.mairo.ukl.rabbit
 
 import com.mairo.ukl.rabbit.RabbitConfigurer._
+import com.mairo.ukl.utils.ConfigProvider.Config
 import com.rabbitmq.client._
 
 object RabbitConsumer {
 
-  def startConsumer(connection: Connection): Unit = {
+  def startConsumer(connection: Connection)(implicit config:Config): Unit = {
     val channel = connection.createChannel()
 
-    channel.basicConsume(listPlayersQR.name, true, consumer(channel, "[LIST PLAYERS]"))
+    channel.basicConsume(config.rabbit.listPlayersQueue.name, true, consumer(channel, "[LIST PLAYERS]"))
 
     val channel2 = connection.createChannel()
-    channel2.basicConsume(addPlayerQR.name, true, consumer(channel2, "[ADD PLAYER]"))
+    channel2.basicConsume(config.rabbit.addPlayerQueue.name, true, consumer(channel2, "[ADD PLAYER]"))
 
     val channel3 = connection.createChannel()
-    channel3.basicConsume(errorsQR.name, true, consumer(channel3, "[BLABLABLA]"))
+    channel3.basicConsume(config.rabbit.errorsQueue.name, true, consumer(channel3, "[BLABLABLA]"))
   }
 
   def consumer(channel: Channel, logPrefix: String): Consumer = {

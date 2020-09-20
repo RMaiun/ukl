@@ -22,6 +22,7 @@ object ConfigProvider {
 
   case class Config(app: AppConfig,
                     db: DbConfig,
+                    rabbit: RabbitConfig,
                     server: ServerConfig)
 
   case class RabbitConfig(global: RabbitGlobalConfig,
