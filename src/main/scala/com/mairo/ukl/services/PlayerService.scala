@@ -1,7 +1,7 @@
 package com.mairo.ukl.services
 
 import cats.Monad
-import com.mairo.ukl.domains.Player.Player
+import com.mairo.ukl.domains.Player
 import com.mairo.ukl.dtos.{AddPlayerDto, FoundAllPlayersDto, IdDto}
 import com.mairo.ukl.repositories.PlayerRepository
 import com.mairo.ukl.services.impl.PlayerServiceImpl

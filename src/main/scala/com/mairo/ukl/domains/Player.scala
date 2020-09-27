@@ -7,6 +7,12 @@ import io.circe.{Decoder, Encoder}
 import org.http4s.circe.{jsonEncoderOf, jsonOf}
 import org.http4s.{EntityDecoder, EntityEncoder}
 
+case class Player(id: Long,
+                  surname: String,
+                  tid: Option[String],
+                  cid: Option[String],
+                  admin: Boolean)
+
 object Player {
 
   implicit val playerDecoder: Decoder[Player] = deriveDecoder[Player]
@@ -18,11 +24,4 @@ object Player {
 
   implicit def playerEntityEncoder[F[_] : Applicative]: EntityEncoder[F, Player] =
     jsonEncoderOf
-
-  case class Player(id: Long,
-                    surname: String,
-                    tid: Option[String],
-                    cid: Option[String],
-                    admin: Boolean)
-
 }

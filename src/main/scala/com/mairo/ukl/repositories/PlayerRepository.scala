@@ -3,8 +3,8 @@ package com.mairo.ukl.repositories
 import cats.Monad
 import cats.data.NonEmptyList
 import cats.effect.Sync
-import com.mairo.ukl.domains.Player.Player
-import com.mairo.ukl.domains.PlayerQueries
+import com.mairo.ukl.domains.Player
+import com.mairo.ukl.domains.queries.PlayerQueries
 import com.mairo.ukl.utils.Flow
 import com.mairo.ukl.utils.Flow.Flow
 import doobie.hikari.HikariTransactor
@@ -18,11 +18,15 @@ trait PlayerRepository[F[_]] extends GenericRepository[F, Player] {
   def getByName(name: String): Flow[F, Option[Player]]
 
   def findLastId: Flow[F, Long]
+
+  def insert(data: Player): Flow[F, Long]
+
+  def update(data: Player): Flow[F, Player]
 }
 
 object PlayerRepository {
-
   import GenericRepository._
+
 
   def apply[F[_]](implicit ev: PlayerRepository[F]): PlayerRepository[F] = ev
 

@@ -3,25 +3,11 @@ package com.mairo.ukl.utils
 import cats.data.EitherT
 import cats.implicits._
 import cats.{Applicative, Functor, Monad}
+import com.mairo.ukl.utils.ResultOps.Result
 import io.chrisdavenport.log4cats.Logger
 
 object Flow {
-  type Result[T] = Either[Throwable, T]
   type Flow[F[_], T] = EitherT[F, Throwable, T]
-
-  object FlowLog {
-    def info[F[_] : Logger : Functor](msg: String): Flow[F, Unit] = {
-      EitherT(Functor[F].map(Logger[F].info(msg))(_.asRight[Throwable]))
-    }
-
-    def warn[F[_] : Logger : Functor](msg: String): Flow[F, Unit] = {
-      EitherT(Functor[F].map(Logger[F].warn(msg))(_.asRight[Throwable]))
-    }
-
-    def error[F[_] : Logger : Functor](msg: String): Flow[F, Unit] = {
-      EitherT(Functor[F].map(Logger[F].error(msg))(_.asRight[Throwable]))
-    }
-  }
 
   def apply[F[_], T](f: F[Result[T]]): Flow[F, T] = {
     EitherT(f)

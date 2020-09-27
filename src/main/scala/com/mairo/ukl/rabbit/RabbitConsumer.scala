@@ -1,7 +1,7 @@
 package com.mairo.ukl.rabbit
 
 import com.mairo.ukl.rabbit.RabbitConfigurer._
-import com.mairo.ukl.utils.ConfigProvider.Config
+import com.mairo.ukl.helper.ConfigProvider.Config
 import com.rabbitmq.client._
 
 object RabbitConsumer {

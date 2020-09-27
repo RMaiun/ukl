@@ -7,8 +7,8 @@ import cats.effect.{ConcurrentEffect, Sync, Timer}
 import cats.syntax.flatMap._
 import com.mairo.ukl.dtos.FoundAllPlayersDto.foundAllPlayersDtoEncoder
 import com.mairo.ukl.services.PlayerService
-import com.mairo.ukl.utils.ConfigProvider.Config
-import com.mairo.ukl.utils.Flow.FlowLog
+import com.mairo.ukl.helper.ConfigProvider.Config
+import com.mairo.ukl.utils.FlowLog
 import io.chrisdavenport.log4cats.Logger
 
 import scala.concurrent.duration.FiniteDuration
@@ -33,7 +33,8 @@ object RabbitTester {
     Logger[F].info("On Start Delay") >> Timer[F].sleep(FiniteDuration(5, TimeUnit.SECONDS))
   }
 
-  def checkPlayers[F[_] : Monad : Timer : Logger : Sync](num: Int, PS: PlayerService[F], RP: RabbitProducer[F])(implicit config: Config): F[Unit] = {
+  def checkPlayers[F[_] : Monad : Timer : Logger : Sync](num: Int, PS: PlayerService[F], RP: RabbitProducer[F])
+                                                        (implicit config: Config): F[Unit] = {
     val result = for {
       _ <- FlowLog.info("Search for players")
       dtoOut <- PS.findAllPlayers

@@ -2,7 +2,7 @@ package com.mairo.ukl.services
 
 import cats.Monad
 import cats.syntax.either._
-import com.mairo.ukl.domains.Player.Player
+import com.mairo.ukl.domains.Player
 import com.mairo.ukl.errors.UklException.InvalidUserRightsException
 import com.mairo.ukl.repositories.PlayerRepository
 import com.mairo.ukl.utils.Flow

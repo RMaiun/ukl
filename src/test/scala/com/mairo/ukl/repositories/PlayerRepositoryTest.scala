@@ -1,9 +1,9 @@
 package com.mairo.ukl.repositories
 
 import cats.effect.{ContextShift, IO}
-import com.mairo.ukl.domains.Player.Player
-import com.mairo.ukl.utils.Flow.Result
-import com.mairo.ukl.utils.{ConfigProvider, TransactorProvider}
+import com.mairo.ukl.domains.Player
+import com.mairo.ukl.helper.{ConfigProvider, TransactorProvider}
+import com.mairo.ukl.utils.ResultOps.Result
 import doobie.hikari.HikariTransactor
 import doobie.util.ExecutionContexts
 import io.chrisdavenport.log4cats.SelfAwareStructuredLogger

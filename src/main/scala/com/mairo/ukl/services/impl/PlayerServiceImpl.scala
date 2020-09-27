@@ -2,13 +2,14 @@ package com.mairo.ukl.services.impl
 
 import cats.Monad
 import cats.syntax.either._
-import com.mairo.ukl.domains.Player.Player
+import com.mairo.ukl.domains.Player
 import com.mairo.ukl.dtos.{AddPlayerDto, FoundAllPlayersDto, IdDto}
 import com.mairo.ukl.errors.UklException.{PlayerAlreadyExistsException, PlayersNotFoundException}
 import com.mairo.ukl.repositories.PlayerRepository
 import com.mairo.ukl.services.{PlayerService, UserRightsService}
 import com.mairo.ukl.utils.Flow
-import com.mairo.ukl.utils.Flow.{Flow, Result}
+import com.mairo.ukl.utils.Flow.Flow
+import com.mairo.ukl.utils.ResultOps.Result
 
 class PlayerServiceImpl[F[_] : Monad](PlayerRepo: PlayerRepository[F],
                                       UserRightsService: UserRightsService[F])

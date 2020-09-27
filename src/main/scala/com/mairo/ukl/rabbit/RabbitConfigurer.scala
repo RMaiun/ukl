@@ -2,7 +2,7 @@ package com.mairo.ukl.rabbit
 
 import java.util.concurrent.Executors
 
-import com.mairo.ukl.utils.ConfigProvider.Config
+import com.mairo.ukl.helper.ConfigProvider.Config
 import com.rabbitmq.client.{Connection, ConnectionFactory}
 
 object RabbitConfigurer {

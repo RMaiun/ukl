@@ -3,8 +3,8 @@ package com.mairo.ukl.rabbit
 import cats.effect.Sync
 import com.mairo.ukl.dtos.Error
 import com.mairo.ukl.dtos.Error._
-import com.mairo.ukl.utils.ConfigProvider.Config
-import com.mairo.ukl.utils.Flow.Result
+import com.mairo.ukl.helper.ConfigProvider.Config
+import com.mairo.ukl.utils.ResultOps.Result
 import com.rabbitmq.client.ConnectionFactory
 
 import scala.util.Try

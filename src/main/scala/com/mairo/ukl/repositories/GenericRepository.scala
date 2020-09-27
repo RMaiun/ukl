@@ -4,16 +4,13 @@ import java.sql.SQLException
 
 import cats.Monad
 import com.mairo.ukl.errors.UklException.DbException
-import com.mairo.ukl.utils.Flow.{Flow, Result}
+import com.mairo.ukl.utils.Flow.Flow
+import com.mairo.ukl.utils.ResultOps.Result
 
 trait GenericRepository[F[_], T] {
   def listAll: Flow[F, List[T]]
 
   def getById(id: Long): Flow[F, Option[T]]
-
-  def insert(data: T): Flow[F, Long]
-
-  def update(data: T): Flow[F, T]
 
   def deleteById(id: Long): Flow[F, Long]
 

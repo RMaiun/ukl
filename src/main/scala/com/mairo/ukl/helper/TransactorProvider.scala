@@ -1,9 +1,9 @@
-package com.mairo.ukl.utils
+package com.mairo.ukl.helper
 
 import java.util.concurrent.Executors
 
 import cats.effect.{Async, Blocker, ContextShift}
-import com.mairo.ukl.utils.ConfigProvider.Config
+import com.mairo.ukl.helper.ConfigProvider.Config
 import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
 import doobie.hikari.HikariTransactor
 

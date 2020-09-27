@@ -3,10 +3,10 @@ package com.mairo.ukl
 import cats.Monad
 import cats.effect.{ConcurrentEffect, ContextShift, Sync, Timer}
 import cats.implicits._
+import com.mairo.ukl.helper.TransactorProvider
 import com.mairo.ukl.rabbit.{RabbitConsumer, RabbitTester}
 import com.mairo.ukl.repositories.PlayerRepository
 import com.mairo.ukl.services.{PlayerService, UserRightsService}
-import com.mairo.ukl.utils.{ConfigProvider, TransactorProvider}
 import fs2.Stream
 import io.chrisdavenport.log4cats.SelfAwareStructuredLogger
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger

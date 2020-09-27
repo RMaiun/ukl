@@ -1,8 +1,9 @@
-package com.mairo.ukl.utils
+package com.mairo.ukl.helper
 
 import pureconfig.ConfigSource
 import pureconfig._
 import pureconfig.generic.auto._
+
 object ConfigProvider {
 
   case class AppConfig(topPlayersLimit: Int,
@@ -45,5 +46,3 @@ object ConfigProvider {
     ConfigSource.default.loadOrThrow[Config]
   }
 }
-
-

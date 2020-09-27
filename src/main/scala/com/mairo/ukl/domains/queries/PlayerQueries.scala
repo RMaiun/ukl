@@ -1,7 +1,7 @@
-package com.mairo.ukl.domains
+package com.mairo.ukl.domains.queries
 
 import cats.data.NonEmptyList
-import com.mairo.ukl.domains.Player.Player
+import com.mairo.ukl.domains.Player
 import doobie._
 import doobie.implicits._
 
@@ -46,10 +46,10 @@ object PlayerQueries {
   def updatePlayer(player: Player): doobie.Update0 = {
     sql"""
          |UPDATE player
-         |SET surname=${player.surname},
-         | tid = ${player.tid},
-         | cid = ${player.cid},
-         | admin = ${player.admin}
+         | SET surname=${player.surname},
+         |  tid = ${player.tid},
+         |  cid = ${player.cid},
+         |  admin = ${player.admin}
          | WHERE id = ${player.id}
     """.stripMargin
       .update

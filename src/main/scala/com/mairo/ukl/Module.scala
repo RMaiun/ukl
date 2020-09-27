@@ -3,10 +3,10 @@ package com.mairo.ukl
 import cats.Monad
 import cats.effect.{ConcurrentEffect, ContextShift, Timer}
 import cats.syntax.semigroupk._
+import com.mairo.ukl.helper.{ConfigProvider, TransactorProvider}
 import com.mairo.ukl.rabbit.{RabbitConfigurer, RabbitConsumer, RabbitProducer, RabbitTester}
 import com.mairo.ukl.repositories.PlayerRepository
 import com.mairo.ukl.services.{PlayerService, UserRightsService}
-import com.mairo.ukl.utils.{ConfigProvider, TransactorProvider}
 import io.chrisdavenport.log4cats.Logger
 import org.http4s.HttpApp
 import org.http4s.client.Client
