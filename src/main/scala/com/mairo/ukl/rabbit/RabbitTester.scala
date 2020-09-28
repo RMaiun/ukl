@@ -6,8 +6,8 @@ import cats.Monad
 import cats.effect.{ConcurrentEffect, Sync, Timer}
 import cats.syntax.flatMap._
 import com.mairo.ukl.dtos.FoundAllPlayersDto.foundAllPlayersDtoEncoder
-import com.mairo.ukl.services.PlayerService
 import com.mairo.ukl.helper.ConfigProvider.Config
+import com.mairo.ukl.services.PlayerService
 import com.mairo.ukl.utils.FlowLog
 import io.chrisdavenport.log4cats.Logger
 

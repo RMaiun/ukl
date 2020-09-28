@@ -3,7 +3,7 @@ package com.mairo.ukl
 import cats.effect.Sync
 import cats.implicits._
 import cats.{Applicative, Monad}
-import com.mairo.ukl.utils.Flow.Result
+import com.mairo.ukl.utils.ResultOps.Result
 import io.chrisdavenport.log4cats.Logger
 import io.circe.Encoder
 import io.circe.generic.semiauto.deriveEncoder

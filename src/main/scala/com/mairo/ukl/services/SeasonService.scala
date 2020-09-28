@@ -7,7 +7,6 @@ import com.mairo.ukl.helper.QuarterCalculator
 import com.mairo.ukl.repositories.SeasonRepository
 import com.mairo.ukl.utils.Flow
 import com.mairo.ukl.utils.Flow.Flow
-import com.mairo.ukl.utils.ResultOps.fromOption
 
 trait SeasonService[F[_]] {
   def findSeasonByName(name: String): Flow[F, Season]
@@ -20,12 +19,14 @@ object SeasonService {
 
   def impl[F[_] : Monad](SR: SeasonRepository[F]): SeasonService[F] = new SeasonService[F] {
     override def findSeasonByName(name: String): Flow[F, Season] = {
-      SR.getByName(name).map(fromOption(_, SeasonNotFoundException(name)))
+      for {
+        maybeSeason <- SR.getByName(name)
+        result <- Flow.fromOption(maybeSeason, SeasonNotFoundException(name))
+      } yield result
     }
 
     override def findSafe(season: String): Flow[F, Season] = {
       findSeasonByName(season).leftFlatMap(_ => storeSeasonIfNow(season))
-
     }
 
     private def storeSeasonIfNow(season: String): Flow[F, Season] = {
@@ -33,7 +34,8 @@ object SeasonService {
       if (nowSeason == season) {
         for {
           id <- SR.insert(nowSeason)
-          found <- SR.getById(id)
+          maybeFound <- SR.getById(id)
+          found <- Flow.fromOption(maybeFound, SeasonNotFoundException(season))
         } yield found
       } else {
         Flow.error(SeasonNotFoundException(season))

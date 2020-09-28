@@ -3,11 +3,11 @@ package com.mairo.ukl
 import cats.effect.Sync
 import cats.implicits._
 import cats.{Applicative, Monad}
+import com.mairo.ukl.helper.ConfigProvider.Config
 import com.mairo.ukl.rabbit.RabbitProducer
 import com.mairo.ukl.repositories.PlayerRepository
-import com.mairo.ukl.helper.ConfigProvider.Config
-import com.mairo.ukl.utils.{Flow, FlowLog}
 import com.mairo.ukl.utils.ResultOps.Result
+import com.mairo.ukl.utils.{Flow, FlowLog}
 import io.chrisdavenport.log4cats.Logger
 import io.circe.generic.semiauto._
 import io.circe.{Decoder, Encoder}

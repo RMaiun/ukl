@@ -13,7 +13,7 @@ import io.chrisdavenport.log4cats.Logger
 trait SeasonRepository[F[_]] extends GenericRepository[F, Season] {
   def getByName(name: String): Flow[F, Option[Season]]
 
-  def insert(name:String): Flow[F, Long]
+  def insert(name: String): Flow[F, Long]
 
   def update(data: Season): Flow[F, Season]
 }

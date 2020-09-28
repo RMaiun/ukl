@@ -2,9 +2,8 @@ package com.mairo.ukl.utils
 
 import cats.data.EitherT
 import cats.implicits._
-import cats.{Applicative, Functor, Monad}
+import cats.{Applicative, Monad}
 import com.mairo.ukl.utils.ResultOps.Result
-import io.chrisdavenport.log4cats.Logger
 
 object Flow {
   type Flow[F[_], T] = EitherT[F, Throwable, T]
@@ -19,6 +18,10 @@ object Flow {
 
   def toLeftResult[F[_] : Applicative, R](data: Throwable): F[Result[R]] = {
     Applicative[F].pure(data.asLeft[R])
+  }
+
+  def fromOption[F[_] : Applicative, T](data: Option[T], ex: Throwable): Flow[F, T] = {
+    EitherT.fromOption[F](data, ex)
   }
 
   def fromRes[F[_] : Applicative, T](data: Result[T]): Flow[F, T] = {

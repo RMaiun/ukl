@@ -25,6 +25,7 @@ trait PlayerRepository[F[_]] extends GenericRepository[F, Player] {
 }
 
 object PlayerRepository {
+
   import GenericRepository._
 
 
