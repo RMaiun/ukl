@@ -31,6 +31,8 @@ lazy val root = (project in file("."))
       "org.apache.kafka" %% "kafka" % "2.6.0",
 
       "org.scalatest" %% "scalatest" % "3.2.2" % Test,
+      "org.scalamock" %% "scalamock" % "4.4.0" % Test,
+
       "org.specs2" %% "specs2-core" % Specs2Version % "test",
 
 
