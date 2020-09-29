@@ -15,11 +15,9 @@ case class AddPlayerDto(surname: String,
 object AddPlayerDto {
   implicit val addPlayerDtoDecoder: Decoder[AddPlayerDto] = deriveDecoder[AddPlayerDto]
 
-  implicit def addPlayerDtoEntityDecoder[F[_] : Sync]: EntityDecoder[F, AddPlayerDto] =
-    jsonOf
+  implicit def addPlayerDtoEntityDecoder[F[_] : Sync]: EntityDecoder[F, AddPlayerDto] = jsonOf
 
   implicit val addPlayerDtoEncoder: Encoder[AddPlayerDto] = deriveEncoder[AddPlayerDto]
 
-  implicit def addPlayerDtoEntityEncoder[F[_] : Applicative]: EntityEncoder[F, AddPlayerDto] =
-    jsonEncoderOf
+  implicit def addPlayerDtoEntityEncoder[F[_] : Applicative]: EntityEncoder[F, AddPlayerDto] = jsonEncoderOf
 }

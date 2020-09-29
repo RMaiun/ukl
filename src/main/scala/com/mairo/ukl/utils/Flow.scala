@@ -36,6 +36,12 @@ object Flow {
     EitherT(Applicative[F].pure(data.asLeft[R]))
   }
 
+  def unit[F[_] : Applicative, R]: Flow[F, Unit] = {
+    val unit: Either[Throwable, Unit] = Right(())
+    EitherT(Applicative[F].pure(unit))
+
+  }
+
   def fromF[F[_] : Monad, T](fa: F[T]): Flow[F, T] = {
     EitherT(Monad[F].map(fa)(x => x.asRight[Throwable]))
   }
