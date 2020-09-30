@@ -20,4 +20,15 @@ object InternalDto {
                           w2: Player,
                           l1: Player,
                           l2: Player)
+
+  case class StatsCalcData(pid: Long,
+                           player: String,
+                           points: Int,
+                           qty: Int = 1)
+
+  case class RatingWithGames(pid: Long,
+                             player: String,
+                             rating: Int,
+                             games: Int)
+
 }
