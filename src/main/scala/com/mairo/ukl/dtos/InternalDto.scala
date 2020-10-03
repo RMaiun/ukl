@@ -31,4 +31,9 @@ object InternalDto {
                              rating: Int,
                              games: Int)
 
+  case class StreakData(currentWin: Int = 0,
+                        maxWin: Int = 0,
+                        currentLose: Int = 0,
+                        maxLose: Int = 0)
+
 }
