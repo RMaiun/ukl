@@ -19,4 +19,11 @@ object DateFormatter {
     val year = date.getYear
     s"$dateTime, $day, $month, $year"
   }
+
+  def formatDate(date: LocalDateTime): String = {
+    val day = date.getDayOfMonth
+    val month = date.getMonth.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
+    val hourAndMinutes = date.toLocalTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+    s"$day $month $hourAndMinutes"
+  }
 }

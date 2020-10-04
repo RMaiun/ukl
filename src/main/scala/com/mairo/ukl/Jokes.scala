@@ -54,7 +54,7 @@ object Jokes {
         all <- PR.listAll
         _ <- FlowLog.info(s"Found ${all.size} players")
         res <- Flow(x)
-        _ <- Flow(RP.publish(s"FOUND JOKE: ${res.toString}".asRight[Throwable], config.rabbit.listPlayersQueue.key))
+        _ <- Flow(RP.publish(s"FOUND JOKE: ${res.toString}".asRight[Throwable], config.rabbit.outputChannel))
       } yield res
 
       result.value

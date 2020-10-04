@@ -36,7 +36,7 @@ object Module {
     val jokeAlg = Jokes.impl[F](config, client, playerRepo,rabbitProducer)
 
     // for testing
-    RabbitTester.startRepeatablePlayersCheck(playerService,rabbitProducer)
+//    RabbitTester.startRepeatablePlayersCheck(playerService,rabbitProducer)
 
     // http
     val httpApp = (UklRoutes.helloWorldRoutes[F](helloWorldAlg) <+>

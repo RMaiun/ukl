@@ -18,14 +18,14 @@ class RoundServiceImpl[F[_] : Monad](PlayerService: PlayerService[F],
                                      RoundRepository: RoundRepository[F],
                                      UserRightsService: UserRightsService[F]) extends RoundService[F] {
 
-  override def findLastRoundsInSeason(dto: FindLastRoundsDto): Flow[F, FoundLastRounds] = {
+  override def findLastRoundsInSeason(dto: FindLastRoundsDto): Flow[F, FoundLastRoundsDto] = {
     for {
       playerMap <- PlayerService.findAllPlayersAsMap
       season <- SeasonService.findSafe(dto.season)
       rounds <- RoundRepository.listLimitedLastRoundsBySeason(season.id, dto.qty)
     } yield {
       val transformedRounds = transformRounds(season, playerMap, rounds)
-      FoundLastRounds(transformedRounds)
+      FoundLastRoundsDto(transformedRounds)
     }
   }
 

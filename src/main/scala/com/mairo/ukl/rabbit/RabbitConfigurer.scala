@@ -26,13 +26,10 @@ object RabbitConfigurer {
 
   private def initStructure(connection: Connection)(implicit config: Config): Unit = {
     val channel = connection.createChannel()
-    channel.exchangeDeclare(config.rabbit.exName, config.rabbit.exType)
-    channel.queueDeclare(config.rabbit.listPlayersQueue.name, false, false, false, null)
-    channel.queueDeclare(config.rabbit.addPlayerQueue.name, false, false, false, null)
-    channel.queueDeclare(config.rabbit.errorsQueue.name, false, false, false, null)
-    channel.queueBind(config.rabbit.listPlayersQueue.name, config.rabbit.exName, config.rabbit.listPlayersQueue.key)
-    channel.queueBind(config.rabbit.addPlayerQueue.name, config.rabbit.exName, config.rabbit.addPlayerQueue.key)
-    channel.queueBind(config.rabbit.errorsQueue.name, config.rabbit.exName, config.rabbit.errorsQueue.key)
+    channel.queueDeclare(config.rabbit.inputChannel, false, false, false, null)
+    channel.queueDeclare(config.rabbit.outputChannel, false, false, false, null)
+    channel.queueDeclare(config.rabbit.errorChannel, false, false, false, null)
+    channel.queueDeclare(config.rabbit.binaryChannel, false, false, false, null)
     channel.close()
   }
 }

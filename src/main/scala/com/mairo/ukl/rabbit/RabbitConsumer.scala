@@ -9,13 +9,10 @@ object RabbitConsumer {
   def startConsumer(connection: Connection)(implicit config:Config): Unit = {
     val channel = connection.createChannel()
 
-    channel.basicConsume(config.rabbit.listPlayersQueue.name, true, consumer(channel, "[LIST PLAYERS]"))
-
-    val channel2 = connection.createChannel()
-    channel2.basicConsume(config.rabbit.addPlayerQueue.name, true, consumer(channel2, "[ADD PLAYER]"))
+    channel.basicConsume(config.rabbit.outputChannel, true, consumer(channel, "[LIST PLAYERS]"))
 
     val channel3 = connection.createChannel()
-    channel3.basicConsume(config.rabbit.errorsQueue.name, true, consumer(channel3, "[BLABLABLA]"))
+    channel3.basicConsume(config.rabbit.errorChannel, true, consumer(channel3, "[BLABLABLA]"))
   }
 
   def consumer(channel: Channel, logPrefix: String): Consumer = {

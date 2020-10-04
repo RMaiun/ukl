@@ -20,19 +20,19 @@ object RabbitProducer {
     val connection = factory.newConnection()
     val channel = connection.createChannel()
     new RabbitProducer[F] {
-      override def publish(value: Result[String], key: String): F[Result[Unit]] = {
+      override def publish(value: Result[String], queue: String): F[Result[Unit]] = {
         value match {
           case Left(throwable) =>
             val error = errorEncoder.apply(Error(throwable.getMessage)).toString()
-            publish(error, config.rabbit.errorsQueue.key)
+            publish(error, config.rabbit.errorChannel)
           case Right(v) =>
-            publish(v, key)
+            publish(v, queue)
         }
       }
 
-      private def publish(value: String, key: String): F[Result[Unit]] = {
+      private def publish(value: String, queue: String): F[Result[Unit]] = {
         Sync[F].delay(
-          Try(channel.basicPublish(config.rabbit.exName, key, false, false, null, value.getBytes)).toEither
+          Try(channel.basicPublish("", queue, false, false, null, value.getBytes)).toEither
         )
       }
     }

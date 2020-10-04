@@ -7,7 +7,7 @@ import com.mairo.ukl.services.impl.RoundServiceImpl
 import com.mairo.ukl.utils.Flow.Flow
 
 trait RoundService[F[_]] {
-  def findLastRoundsInSeason(dto: FindLastRoundsDto): Flow[F, FoundLastRounds]
+  def findLastRoundsInSeason(dto: FindLastRoundsDto): Flow[F, FoundLastRoundsDto]
 
   def findAllRounds(seasonName: String): Flow[F, List[FullRound]]
 

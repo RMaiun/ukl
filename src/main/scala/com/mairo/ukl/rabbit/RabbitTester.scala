@@ -40,7 +40,7 @@ object RabbitTester {
       dtoOut <- PS.findAllPlayers
     } yield foundAllPlayersDtoEncoder.apply(dtoOut).toString()
 
-    val send = Monad[F].flatMap(result.value)(x => RP.publish(x, config.rabbit.listPlayersQueue.key))
+    val send = Monad[F].flatMap(result.value)(x => RP.publish(x, config.rabbit.outputChannel))
 
     send >> schedule >> checkPlayers(num + 1, PS, RP)
   }
