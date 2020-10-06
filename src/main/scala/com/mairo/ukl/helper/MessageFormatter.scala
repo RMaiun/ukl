@@ -9,10 +9,10 @@ import com.mairo.ukl.utils.Flow.Flow
 object MessageFormatter {
   def formatPlayers[F[_] : Monad](data: FoundAllPlayersDto): Flow[F, String] = {
     val players = data.players.map(x => s"${x.id}|${x.surname.capitalize}").mkString("\n")
-    val result =
-      s"""```
-         |$players```
-       """.stripMargin
+    val result = "ebobo"
+    //      s"""```
+    //         |$players```
+    //       """.stripMargin
     Flow.pure(result)
   }
 

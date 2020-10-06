@@ -10,4 +10,8 @@ object ResultOps {
       case None => ex.asLeft[T]
     }
   }
+
+  def error[T](err:Throwable):Result[T] = {
+    err.asLeft[T]
+  }
 }

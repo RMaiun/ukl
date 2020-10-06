@@ -1,10 +1,9 @@
 package com.mairo.ukl.utils
 
 import cats.data.EitherT
-import cats.implicits._
 import cats.{Applicative, Monad}
 import com.mairo.ukl.utils.ResultOps.Result
-
+import cats.syntax.either._
 object Flow {
   type Flow[F[_], T] = EitherT[F, Throwable, T]
 

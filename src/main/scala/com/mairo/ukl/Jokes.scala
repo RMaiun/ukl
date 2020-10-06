@@ -3,9 +3,11 @@ package com.mairo.ukl
 import cats.effect.Sync
 import cats.implicits._
 import cats.{Applicative, Monad}
+import com.mairo.ukl.dtos.{BotRequestDto, FoundAllPlayersDto}
 import com.mairo.ukl.helper.ConfigProvider.Config
 import com.mairo.ukl.rabbit.RabbitProducer
 import com.mairo.ukl.repositories.PlayerRepository
+import com.mairo.ukl.utils.Flow.Flow
 import com.mairo.ukl.utils.ResultOps.Result
 import com.mairo.ukl.utils.{Flow, FlowLog}
 import io.chrisdavenport.log4cats.Logger
@@ -54,10 +56,21 @@ object Jokes {
         all <- PR.listAll
         _ <- FlowLog.info(s"Found ${all.size} players")
         res <- Flow(x)
-        _ <- Flow(RP.publish(s"FOUND JOKE: ${res.toString}".asRight[Throwable], config.rabbit.outputChannel))
+        _ <- publish(FoundAllPlayersDto(all))
       } yield res
 
       result.value
+    }
+
+    private def publish(data: FoundAllPlayersDto): Flow[F, Unit] = {
+      import FoundAllPlayersDto._
+      import io.circe.syntax._
+      val json = data.asJson
+      val request = BotRequestDto("listPlayers", "8083", json)
+      val strRequest = request.asJson.toString()
+      val resultRequest = strRequest.asRight[Throwable]
+      Flow(RP.publish(resultRequest, config.rabbit.inputChannel)
+      )
     }
   }
 }
