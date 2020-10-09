@@ -5,6 +5,7 @@ import cats.{Applicative, Monad}
 import com.mairo.ukl.utils.ResultOps.Result
 import cats.syntax.either._
 object Flow {
+
   type Flow[F[_], T] = EitherT[F, Throwable, T]
 
   def apply[F[_], T](f: F[Result[T]]): Flow[F, T] = {

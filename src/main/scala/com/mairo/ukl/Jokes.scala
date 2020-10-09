@@ -3,7 +3,7 @@ package com.mairo.ukl
 import cats.effect.Sync
 import cats.implicits._
 import cats.{Applicative, Monad}
-import com.mairo.ukl.dtos.{BotRequestDto, FoundAllPlayersDto}
+import com.mairo.ukl.dtos.{BotRequestDto, BotResponse, FoundAllPlayersDto}
 import com.mairo.ukl.helper.ConfigProvider.Config
 import com.mairo.ukl.rabbit.RabbitProducer
 import com.mairo.ukl.repositories.PlayerRepository
@@ -68,9 +68,7 @@ object Jokes {
       val json = data.asJson
       val request = BotRequestDto("listPlayers", "8083", json)
       val strRequest = request.asJson.toString()
-      val resultRequest = strRequest.asRight[Throwable]
-      Flow(RP.publish(resultRequest, config.rabbit.inputChannel)
-      )
+      RP.publish(BotResponse("test",strRequest), config.rabbit.inputChannel)
     }
   }
 }

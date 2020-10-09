@@ -3,6 +3,7 @@ package com.mairo.ukl
 import cats.Monad
 import cats.effect.{ConcurrentEffect, ContextShift, Timer}
 import cats.syntax.semigroupk._
+import com.mairo.ukl.bot.BotCmdProcessor
 import com.mairo.ukl.helper.{ConfigProvider, TransactorProvider}
 import com.mairo.ukl.rabbit.{RabbitConfigurer, RabbitConsumer, RabbitProducer}
 import com.mairo.ukl.repositories.{PlayerRepository, RoundRepository, SeasonRepository}
@@ -37,10 +38,10 @@ object Module {
     val connection = RabbitConfigurer.initRabbit(factory)
     val rabbitProducer = RabbitProducer.impl[F](factory)
 
-    val messageProcessor = TelegramMsgProcessor.impl[F](roundService, statsService, playerService, rabbitProducer)
+    val botCmdProcessor = BotCmdProcessor.impl(playerService, rabbitProducer)
+    val messageProcessor = TelegramMsgProcessor.impl[F](botCmdProcessor)
+
     RabbitConsumer.startConsumer(factory, messageProcessor)
-
-
     val jokeAlg = Jokes.impl[F](config, client, playerRepo, rabbitProducer)
 
     // for testing
