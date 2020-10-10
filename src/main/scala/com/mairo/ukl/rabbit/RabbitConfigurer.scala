@@ -9,6 +9,7 @@ object RabbitConfigurer {
 
   def factory(config: Config): ConnectionFactory = {
     val factory: ConnectionFactory = new ConnectionFactory
+    factory.setAutomaticRecoveryEnabled(true)
     factory.setUsername(config.rabbit.global.username)
     factory.setPassword(config.rabbit.global.password)
     factory.setVirtualHost(config.rabbit.global.virtualHost)

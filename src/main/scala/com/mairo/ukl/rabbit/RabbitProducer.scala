@@ -12,6 +12,8 @@ import scala.util.Try
 
 trait RabbitProducer[F[_]] {
   def publish(data: BotResponse, key: String): Flow[F, Unit]
+
+  def publishString(data: String, key: String): Flow[F, Unit]
 }
 
 object RabbitProducer {
@@ -27,6 +29,10 @@ object RabbitProducer {
         import io.circe.syntax._
         val json = data.asJson.toString()
         Flow(publishInternal(json, key))
+      }
+
+      override def publishString(data: String, key: String): Flow[F, Unit] = {
+        Flow(publishInternal(data, key))
       }
 
       private def publishInternal(value: String, queue: String): F[Result[Unit]] = {
