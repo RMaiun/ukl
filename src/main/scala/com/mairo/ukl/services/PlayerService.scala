@@ -15,6 +15,8 @@ trait PlayerService[F[_]] {
   def checkPlayersExist(surnameList: List[String]): Flow[F, List[Player]]
 
   def addPlayer(dto: AddPlayerDto): Flow[F, IdDto]
+
+  def findPlayer(name:String):Flow[F,Player]
 }
 
 object PlayerService {

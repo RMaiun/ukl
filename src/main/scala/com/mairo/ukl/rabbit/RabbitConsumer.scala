@@ -18,13 +18,6 @@ object RabbitConsumer {
                                                                           (implicit config: Config): Unit = {
     val channel = connectionFactory.newConnection().createChannel()
     channel.basicConsume(config.rabbit.inputChannel, true, consumer(channel, "[INPUT]", MessageProcessor))
-
-    val channel2 = connectionFactory.newConnection().createChannel()
-    channel2.basicConsume(config.rabbit.outputChannel, true, consumer2(channel2, "[OUTPUT]"))
-
-    val channel3 = connectionFactory.newConnection().createChannel()
-    channel3.basicConsume(config.rabbit.errorChannel, true, consumer3(channel3, "[ERROR]"))
-
   }
 
   def consumer[F[_] : Sync : ConcurrentEffect : ContextShift](channel: Channel,
@@ -39,26 +32,7 @@ object RabbitConsumer {
           case Right(v) => MT.pure(())
           case Left(err) => Sync[F].delay(err.printStackTrace())
         }
-//        val shiftEffect = ContextShift[F].evalOn(ec)(handledEffect)
         ConcurrentEffect[F].toIO(handledEffect).unsafeRunAsyncAndForget()
-      }
-    }
-  }
-
-  def consumer2(channel: Channel, logPrefix: String): Consumer = {
-    new DefaultConsumer(channel) {
-      override def handleDelivery(consumerTag: String, envelope: Envelope, properties: AMQP.BasicProperties, body: Array[Byte]): Unit = {
-        println("=-=-=-=-=-Received OUTPUT=-=-=-=-=-=-=-")
-        println(new String(body))
-      }
-    }
-  }
-
-  def consumer3(channel: Channel, logPrefix: String): Consumer = {
-    new DefaultConsumer(channel) {
-      override def handleDelivery(consumerTag: String, envelope: Envelope, properties: AMQP.BasicProperties, body: Array[Byte]): Unit = {
-        println("=-=-=-=-=-Received ERROR=-=-=-=-=-=-=-")
-        println(new String(body))
       }
     }
   }

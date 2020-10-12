@@ -7,7 +7,7 @@ import io.circe.{Decoder, Encoder}
 import org.http4s.circe.{jsonEncoderOf, jsonOf}
 import org.http4s.{EntityDecoder, EntityEncoder}
 
-case class BotResponse(chatId: String, result: String)
+case class BotResponse(msgId: Int, chatId: String, result: String)
 
 object BotResponse {
   implicit val addRoundDtoDecoder: Decoder[BotResponse] = deriveDecoder[BotResponse]

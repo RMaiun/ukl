@@ -38,7 +38,7 @@ object Module {
     val connection = RabbitConfigurer.initRabbit(factory)
     val rabbitProducer = RabbitProducer.impl[F](factory)
 
-    val botCmdProcessor = BotCmdProcessor.impl(playerService, rabbitProducer)
+    val botCmdProcessor = BotCmdProcessor.impl(playerService,roundService, rabbitProducer)
     val messageProcessor = TelegramMsgProcessor.impl[F](botCmdProcessor)
 
     RabbitConsumer.startConsumer(factory, messageProcessor)

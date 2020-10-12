@@ -10,6 +10,7 @@ import org.http4s.{EntityDecoder, EntityEncoder}
 case class BotRequestDto(
                           cmd: String,
                           chatId: String,
+                          msgId: String,
                           data: Json)
 
 object BotRequestDto {

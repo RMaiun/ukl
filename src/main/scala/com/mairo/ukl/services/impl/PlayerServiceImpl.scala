@@ -4,7 +4,7 @@ import cats.Monad
 import cats.syntax.either._
 import com.mairo.ukl.domains.Player
 import com.mairo.ukl.dtos.{AddPlayerDto, FoundAllPlayersDto, IdDto}
-import com.mairo.ukl.errors.UklException.{PlayerAlreadyExistsException, PlayersNotFoundException}
+import com.mairo.ukl.errors.UklException.{PlayerAlreadyExistsException, PlayerNotFoundException, PlayersNotFoundException}
 import com.mairo.ukl.repositories.PlayerRepository
 import com.mairo.ukl.services.{PlayerService, UserRightsService}
 import com.mairo.ukl.utils.Flow
@@ -38,6 +38,10 @@ class PlayerServiceImpl[F[_] : Monad](PlayerRepo: PlayerRepository[F],
       player = Player(lastId, dto.surname, dto.tid, None, dto.admin)
       storedId <- PlayerRepo.insert(player)
     } yield IdDto(storedId)
+  }
+
+  override def findPlayer(name: String): Flow[F, Player] = {
+    PlayerRepo.getByName(name).flatMap(x => Flow.fromOption(x, PlayerNotFoundException(name)))
   }
 
   private def prepareCheckedPlayers(players: List[Player], surnames: List[String]): Result[List[Player]] = {

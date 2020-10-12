@@ -67,7 +67,7 @@ object Jokes {
       import FoundAllPlayersDto._
       import io.circe.syntax._
       val json = data.asJson
-      val request = BotRequestDto("listCmdPlayers", chatId, json)
+      val request = BotRequestDto("listCmdPlayers", chatId, "123", json)
       val strRequest = request.asJson.toString()
       RP.publishString(strRequest, config.rabbit.inputChannel)
     }

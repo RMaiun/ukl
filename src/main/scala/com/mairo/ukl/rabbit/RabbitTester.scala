@@ -44,7 +44,7 @@ object RabbitTester {
       case Right(x) => x
       case Left(err) => err.getMessage
     }
-    val send = Monad[F].flatMap(mappedRes)(x => RP.publish(BotResponse("test", x), config.rabbit.outputChannel).value)
+    val send = Monad[F].flatMap(mappedRes)(x => RP.publish(BotResponse(1, "test", x), config.rabbit.outputChannel).value)
 
     send >> schedule >> checkPlayers(num + 1, PS, RP)
   }
