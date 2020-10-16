@@ -8,9 +8,9 @@ import com.mairo.ukl.utils.Flow.Flow
 
 object MessageFormatter {
 
-  def formatPlayerNotification[F[_] : Monad](opponent1:String, opponent2:String, isWinner:Boolean): Flow[F, String] = {
+  def formatPlayerNotification[F[_] : Monad](opponent1: String, opponent2: String, isWinner: Boolean): Flow[F, String] = {
     val action = if (isWinner) "won" else "lost"
-    Flow.pure(s"You $action the game against $opponent1/$opponent2")
+    Flow.pure(s"``` You $action the game against $opponent1/$opponent2```")
   }
 
   def formatPlayers[F[_] : Monad](data: FoundAllPlayersDto): Flow[F, String] = {

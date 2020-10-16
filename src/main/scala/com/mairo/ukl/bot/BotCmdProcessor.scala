@@ -37,7 +37,7 @@ object BotCmdProcessor {
         withErrorCheck(chatId, msgId)(result)
       }
 
-      override def addRoundCmd(chatId: String, msgId: Int,dto: AddRoundDto): Flow[F, Unit] = {
+      override def addRoundCmd(chatId: String, msgId: Int, dto: AddRoundDto): Flow[F, Unit] = {
         for {
           id <- RoundService.saveRound(dto)
           str <- MessageFormatter.formatStoredId(id)
@@ -46,10 +46,10 @@ object BotCmdProcessor {
           l1 <- PlayerService.findPlayer(dto.l1)
           l2 <- PlayerService.findPlayer(dto.l2)
           _ <- RabbitProducer.publish(BotResponse(msgId, chatId, str), config.rabbit.outputChannel)
-          _ <- sendNotification(w1, dto.l1.toUpperCase, dto.l2.toUpperCase, isWinner = true)
-          _ <- sendNotification(w2, dto.l1.toUpperCase, dto.l2.toUpperCase, isWinner = true)
-          _ <- sendNotification(l1, dto.w1.toUpperCase, dto.w2.toUpperCase, isWinner = false)
-          _ <- sendNotification(l2, dto.w1.toUpperCase, dto.w2.toUpperCase, isWinner = false)
+          _ <- sendNotification(w1, dto.l1.capitalize, dto.l2.capitalize, isWinner = true)
+          _ <- sendNotification(w2, dto.l1.capitalize, dto.l2.capitalize, isWinner = true)
+          _ <- sendNotification(l1, dto.w1.capitalize, dto.w2.capitalize, isWinner = false)
+          _ <- sendNotification(l2, dto.w1.capitalize, dto.w2.capitalize, isWinner = false)
         } yield ()
       }
 
