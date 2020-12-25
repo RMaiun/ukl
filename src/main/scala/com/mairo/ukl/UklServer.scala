@@ -10,6 +10,7 @@ import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.middleware.Logger
+import cats.implicits._
 
 import scala.concurrent.ExecutionContext.global
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutorService}
@@ -25,7 +26,7 @@ object UklServer {
     for {
       //general
       client <- BlazeClientBuilder[F](global).withMaxWaitQueueLimit(1000).stream
-      httpApp = Module.initHttpApp(client)
+      httpApp <- Stream.eval(Module.initHttpApp(client).pure[F])
 
       // With Middlewares in place
       finalHttpApp = Logger.httpApp(logHeaders = true, logBody = true)(httpApp)

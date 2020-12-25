@@ -5,7 +5,7 @@ import cats.implicits._
 import cats.{Applicative, Monad}
 import com.mairo.ukl.dtos.{BotRequestDto, FoundAllPlayersDto}
 import com.mairo.ukl.helper.ConfigProvider.Config
-import com.mairo.ukl.rabbit.RabbitProducer
+import com.mairo.ukl.rabbit.RabbitSender
 import com.mairo.ukl.repositories.PlayerRepository
 import com.mairo.ukl.utils.Flow.Flow
 import com.mairo.ukl.utils.ResultOps.Result
@@ -43,7 +43,7 @@ object Jokes {
 
   final case class JokeError(e: Throwable) extends RuntimeException
 
-  def impl[F[_] : Sync : Monad : Logger](config: Config, C: Client[F], PR: PlayerRepository[F], RP: RabbitProducer[F]): Jokes[F] = new Jokes[F] {
+  def impl[F[_] : Sync : Monad : Logger](config: Config, C: Client[F], PR: PlayerRepository[F], RP: RabbitSender[F]): Jokes[F] = new Jokes[F] {
     val dsl: Http4sClientDsl[F] = new Http4sClientDsl[F] {}
 
     import dsl._

@@ -1,8 +1,8 @@
 package com.mairo.ukl.rabbit
 
 import cats.effect.Sync
-import com.mairo.ukl.dtos.BotResponse
 import com.mairo.ukl.helper.ConfigProvider.Config
+import com.mairo.ukl.processor.CommandObjects.BotOutputMessage
 import com.mairo.ukl.utils.Flow
 import com.mairo.ukl.utils.Flow.Flow
 import com.mairo.ukl.utils.ResultOps.Result
@@ -10,25 +10,25 @@ import com.rabbitmq.client.ConnectionFactory
 
 import scala.util.Try
 
-trait RabbitProducer[F[_]] {
-  def publish(data: BotResponse, key: String): Flow[F, Unit]
+trait RabbitSender[F[_]] {
+  def publish(data: BotOutputMessage): Flow[F, Unit]
 
   def publishString(data: String, key: String): Flow[F, Unit]
 }
 
-object RabbitProducer {
-  def apply[F[_]](implicit ev: RabbitProducer[F]): RabbitProducer[F] = ev
+object RabbitSender {
+  def apply[F[_]](implicit ev: RabbitSender[F]): RabbitSender[F] = ev
 
-  def impl[F[_] : Sync](factory: ConnectionFactory)(implicit config: Config): RabbitProducer[F] = {
+  def impl[F[_] : Sync](factory: ConnectionFactory)(implicit config: Config): RabbitSender[F] = {
     val connection = factory.newConnection()
     val channel = connection.createChannel()
-    new RabbitProducer[F] {
+    new RabbitSender[F] {
 
-      override def publish(data: BotResponse, key: String): Flow[F, Unit] = {
-        import BotResponse._
+      override def publish(data: BotOutputMessage): Flow[F, Unit] = {
+        import com.mairo.ukl.processor.CommandObjectCodecs._
         import io.circe.syntax._
         val json = data.asJson.toString()
-        Flow(publishInternal(json, key))
+        Flow(publishInternal(json, config.rabbit.outputChannel))
       }
 
       override def publishString(data: String, key: String): Flow[F, Unit] = {

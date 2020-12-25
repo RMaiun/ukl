@@ -1,13 +1,15 @@
 package com.mairo.ukl
 
 import cats.Monad
-import cats.effect.{ConcurrentEffect, ContextShift, Timer}
+import cats.effect.{ConcurrentEffect, ContextShift, Sync, Timer}
 import cats.syntax.semigroupk._
 import com.mairo.ukl.bot.BotCmdProcessor
+import com.mairo.ukl.helper.ConfigProvider.Config
 import com.mairo.ukl.helper.{ConfigProvider, TransactorProvider}
-import com.mairo.ukl.rabbit.{RabbitConfigurer, RabbitConsumer, RabbitProducer}
+import com.mairo.ukl.rabbit.{RabbitConfigurer, RabbitConsumer, RabbitSender}
 import com.mairo.ukl.repositories.{PlayerRepository, RoundRepository, SeasonRepository}
 import com.mairo.ukl.services._
+import com.rabbitmq.client.ConnectionFactory
 import io.chrisdavenport.log4cats.Logger
 import org.http4s.HttpApp
 import org.http4s.client.Client
@@ -36,7 +38,7 @@ object Module {
     //rabbitMQ consumers
     val factory = RabbitConfigurer.factory(config)
     val connection = RabbitConfigurer.initRabbit(factory)
-    val rabbitProducer = RabbitProducer.impl[F](factory)
+    val rabbitProducer = RabbitSender.impl[F](factory)
 
     val botCmdProcessor = BotCmdProcessor.impl(playerService,roundService, rabbitProducer)
     val messageProcessor = TelegramMsgProcessor.impl[F](botCmdProcessor)
@@ -52,5 +54,11 @@ object Module {
       UklRoutes.jokeRoutes[F](jokeAlg)).orNotFound
 
     httpApp
+  }
+
+  def startConsumer[F[_] : Monad : Sync : ContextShift : ConcurrentEffect](connectionFactory: ConnectionFactory,
+                                                                           MessageProcessor: TelegramMsgProcessor[F])
+                                                                          (implicit config: Config): Unit = {
+
   }
 }

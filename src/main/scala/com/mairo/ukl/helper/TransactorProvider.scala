@@ -13,8 +13,8 @@ object TransactorProvider {
 
   def hikariTransactor[F[_] : Async : ContextShift](c: Config, useSSL:Boolean=false, allowPublicKeyRetrieval:Boolean = false): HikariTransactor[F] = {
     val config = new HikariConfig()
-    val ec = ExecutionContext.fromExecutor(Executors.newCachedThreadPool())
-    val bec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(32))
+    val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(32))
+    val bec = ExecutionContext.fromExecutor(Executors.newCachedThreadPool())
     val sslParam = s"useSSL=$useSSL"
     val pcRetrievalParam = s"allowPublicKeyRetrieval=$allowPublicKeyRetrieval"
     val url = s"jdbc:mysql://${c.db.host}:${c.db.port}/${c.db.database}?$sslParam&$pcRetrievalParam"
@@ -23,6 +23,6 @@ object TransactorProvider {
     config.setPassword(c.db.password)
     config.setMaximumPoolSize(5)
     config.setDriverClassName("com.mysql.cj.jdbc.Driver")
-    HikariTransactor.apply[F](new HikariDataSource(config), ec, Blocker.liftExecutionContext(bec))
+    HikariTransactor[F](new HikariDataSource(config), ec, Blocker.liftExecutionContext(bec))
   }
 }

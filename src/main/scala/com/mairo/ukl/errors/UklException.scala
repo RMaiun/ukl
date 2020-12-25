@@ -6,6 +6,8 @@ object UklException {
 
   case class DbException(cause: Throwable) extends RuntimeException(cause)
 
+  case class ValidationException(errors: List[String]) extends RuntimeException(s"ValidationErrors: ${errors.mkString("[", ",", "]")}")
+
   case class InvalidUserRightsException() extends RuntimeException("Not enough rights to persist data.")
 
   case class PlayersNotFoundException(players: List[String]) extends RuntimeException(s"Players with names: [${players.mkString(",")}] were not found.")
@@ -22,5 +24,9 @@ object UklException {
 
   case class InvalidBotRequest(chatId: Option[String], cmd: Option[String], body: Option[Json] = None)
     extends RuntimeException(s"Some of required params [cmd, chatId, requestBody] are missed [$cmd, $chatId, $body]")
+
+  case class AbsentCommandInput() extends RuntimeException(s"Command was recognized without input")
+
+  case class InvalidCommandException(cmd: String) extends RuntimeException(s"Command $cmd is not supported.")
 
 }

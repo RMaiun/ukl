@@ -17,7 +17,7 @@ import scala.concurrent.duration.FiniteDuration
 object RabbitTester {
 
   def startRepeatablePlayersCheck[F[_] : Monad : Timer : Sync : Logger : ConcurrentEffect](PS: PlayerService[F],
-                                                                                           RP: RabbitProducer[F])
+                                                                                           RP: RabbitSender[F])
                                                                                           (implicit config: Config): ExecutorService = {
     val pool: ExecutorService = Executors.newSingleThreadExecutor()
     pool.execute(() => {
@@ -34,7 +34,7 @@ object RabbitTester {
     Logger[F].info("On Start Delay") >> Timer[F].sleep(FiniteDuration(5, TimeUnit.SECONDS))
   }
 
-  def checkPlayers[F[_] : Monad : Timer : Logger : Sync](num: Int, PS: PlayerService[F], RP: RabbitProducer[F])
+  def checkPlayers[F[_] : Monad : Timer : Logger : Sync](num: Int, PS: PlayerService[F], RP: RabbitSender[F])
                                                         (implicit config: Config): F[Unit] = {
     val result = for {
       _ <- FlowLog.info("Search for players")

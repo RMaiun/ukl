@@ -6,7 +6,7 @@ import com.mairo.ukl.domains.Player
 import com.mairo.ukl.dtos.{AddRoundDto, BotResponse}
 import com.mairo.ukl.helper.ConfigProvider.Config
 import com.mairo.ukl.helper.MessageFormatter
-import com.mairo.ukl.rabbit.RabbitProducer
+import com.mairo.ukl.rabbit.RabbitSender
 import com.mairo.ukl.services.{PlayerService, RoundService}
 import com.mairo.ukl.utils.Flow
 import com.mairo.ukl.utils.Flow.Flow
@@ -26,7 +26,7 @@ object BotCmdProcessor {
 
   def impl[F[_] : Monad : Sync, FoundPlayers](PlayerService: PlayerService[F],
                                               RoundService: RoundService[F],
-                                              RabbitProducer: RabbitProducer[F])(implicit config: Config): BotCmdProcessor[F] =
+                                              RabbitProducer: RabbitSender[F])(implicit config: Config): BotCmdProcessor[F] =
     new BotCmdProcessor[F] {
       override def listPlayersCmd(chatId: String, msgId: Int): Flow[F, Unit] = {
         val result: Flow[F, Unit] = for {
