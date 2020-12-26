@@ -3,6 +3,7 @@ package com.mairo.ukl.repositories
 import cats.effect.{ContextShift, IO}
 import com.mairo.ukl.domains.Player
 import com.mairo.ukl.helper.{ConfigProvider, TransactorProvider}
+import com.mairo.ukl.services.PlayerService.SurnameProp
 import com.mairo.ukl.utils.ResultOps.Result
 import doobie.hikari.HikariTransactor
 import doobie.util.ExecutionContexts
@@ -59,7 +60,7 @@ class PlayerRepositoryTest extends AnyFlatSpec
     val result: Result[Long] = createPlayer(testPid, testName)
     result.isRight should be(true)
 
-    val updPlayer = Player(testPid, "Test4", None, None, admin = true)
+    val updPlayer = Player(testPid, "Test4", None, admin = true, notificationsEnabled = false)
     val updatedPlayer = playerRepo.update(updPlayer).value.unsafeRunSync()
     updatedPlayer.isRight should be(true)
 
@@ -100,7 +101,7 @@ class PlayerRepositoryTest extends AnyFlatSpec
   }
 
   private def createPlayer(id: Long, name: String): Result[Long] = {
-    val player = Player(id, name, Some("9z10y"), None, admin = false)
+    val player = Player(id, name, Some("9z10y"), admin = false, notificationsEnabled = false)
     playerRepo.insert(player).value.unsafeRunSync()
   }
 

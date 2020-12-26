@@ -25,12 +25,12 @@ lazy val root = (project in file("."))
       "io.chrisdavenport" %% "log4cats-slf4j" % "1.1.1",
       "com.github.pureconfig" %% "pureconfig" % "0.13.0",
       "com.rabbitmq" % "amqp-client" % "5.9.0",
+      "com.wix" %% "accord-core" % "0.7.6",
 
       "mysql" % "mysql-connector-java" % "8.0.11",
       "org.tpolecat" %% "doobie-core" % "0.9.0",
       "org.tpolecat" %% "doobie-hikari" % "0.9.0", // HikariCP transactor.
 
-      "org.apache.kafka" %% "kafka" % "2.6.0",
 
       "org.scalatest" %% "scalatest" % "3.2.2" % Test,
       "org.scalamock" %% "scalamock" % "4.4.0" % Test,

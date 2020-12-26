@@ -11,10 +11,10 @@ object TestData {
   }
 
   def players(admin: Boolean): List[Player] = {
-    List(Player(1, "Test1", Some("0001"), None, admin),
-      Player(2, "Test2", Some("0002"), None, admin),
-      Player(3, "Test3", Some("0003"), None, admin),
-      Player(4, "Test4", Some("0004"), None, admin),
+    List(Player(1, "Test1", Some("0001"), admin, notificationsEnabled = false),
+      Player(2, "Test2", Some("0002"), admin, notificationsEnabled = false),
+      Player(3, "Test3", Some("0003"), admin, notificationsEnabled = false),
+      Player(4, "Test4", Some("0004"), admin, notificationsEnabled = false),
     )
   }
 

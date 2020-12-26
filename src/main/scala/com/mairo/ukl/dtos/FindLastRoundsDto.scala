@@ -10,11 +10,11 @@ import org.http4s.{EntityDecoder, EntityEncoder}
 case class FindLastRoundsDto(season: String, qty: Int)
 
 object FindLastRoundsDto {
-  implicit val findLastRoundsDtoDecoder: Decoder[FindLastRoundsDto] = deriveDecoder[FindLastRoundsDto]
+  implicit val FindLastRoundsDtoDecoder: Decoder[FindLastRoundsDto] = deriveDecoder[FindLastRoundsDto]
 
-  implicit def findLastRoundsDtoEntityDecoder[F[_] : Sync]: EntityDecoder[F, FindLastRoundsDto] = jsonOf
+  implicit def FindLastRoundsDtoEntityDecoder[F[_] : Sync]: EntityDecoder[F, FindLastRoundsDto] = jsonOf
 
-  implicit val findLastRoundsDtoEncoder: Encoder[FindLastRoundsDto] = deriveEncoder[FindLastRoundsDto]
+  implicit val FindLastRoundsDtoEncoder: Encoder[FindLastRoundsDto] = deriveEncoder[FindLastRoundsDto]
 
-  implicit def findLastRoundsDtoEntityEncoder[F[_] : Applicative]: EntityEncoder[F, FindLastRoundsDto] = jsonEncoderOf
+  implicit def FindLastRoundsDtoEntityEncoder[F[_] : Applicative]: EntityEncoder[F, FindLastRoundsDto] = jsonEncoderOf
 }

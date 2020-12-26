@@ -6,42 +6,55 @@ import com.mairo.ukl.domains.Player
 import com.mairo.ukl.dtos.{AddPlayerDto, FoundAllPlayersDto, IdDto}
 import com.mairo.ukl.errors.UklException.{PlayerAlreadyExistsException, PlayerNotFoundException, PlayersNotFoundException}
 import com.mairo.ukl.repositories.PlayerRepository
+import com.mairo.ukl.services.PlayerService.{SurnameProp, TidProp}
 import com.mairo.ukl.services.{PlayerService, UserRightsService}
 import com.mairo.ukl.utils.Flow
 import com.mairo.ukl.utils.Flow.Flow
 import com.mairo.ukl.utils.ResultOps.Result
+import com.mairo.ukl.validations.ValidationsSet._
+import com.mairo.ukl.validations.Validator
 
-class PlayerServiceImpl[F[_] : Monad](PlayerRepo: PlayerRepository[F],
-                                      UserRightsService: UserRightsService[F])
+class PlayerServiceImpl[F[_] : Monad](playerRepo: PlayerRepository[F],
+                                      userRightsService: UserRightsService[F])
   extends PlayerService[F] {
+
   override def findAllPlayersAsMap: Flow[F, Map[Long, String]] = {
-    PlayerRepo.listAll.map(_.map(p => (p.id, p.surname)).toMap)
+    playerRepo.listAll.map(_.map(p => (p.id, p.surname)).toMap)
   }
 
   override def findAllPlayers: Flow[F, FoundAllPlayersDto] = {
-    PlayerRepo.listAll.map(FoundAllPlayersDto(_))
+    playerRepo.listAll.map(FoundAllPlayersDto(_))
   }
 
   override def checkPlayersExist(surnameList: List[String]): Flow[F, List[Player]] = {
     val surnames = surnameList.map(_.toLowerCase())
     for {
-      players <- PlayerRepo.findPlayers(surnames)
+      players <- playerRepo.findPlayers(surnames)
       checkedPlayers <- Flow.fromRes(prepareCheckedPlayers(players, surnames))
     } yield checkedPlayers
   }
 
   override def addPlayer(dto: AddPlayerDto): Flow[F, IdDto] = {
     for {
-      _ <- UserRightsService.checkUserIsAdmin(dto.moderator)
+      _ <- Validator.validateDto(dto)
+      _ <- userRightsService.checkUserIsAdmin(dto.moderator)
       _ <- checkPlayerNotExist(dto.surname)
-      lastId <- PlayerRepo.findLastId
-      player = Player(lastId, dto.surname, dto.tid, None, dto.admin)
-      storedId <- PlayerRepo.insert(player)
+      lastId <- playerRepo.findLastId
+      player = Player(lastId, dto.surname, dto.tid, dto.admin, notificationsEnabled = false)
+      storedId <- playerRepo.insert(player)
     } yield IdDto(storedId)
   }
 
-  override def findPlayer(name: String): Flow[F, Player] = {
-    PlayerRepo.getByName(name).flatMap(x => Flow.fromOption(x, PlayerNotFoundException(name)))
+  override def findPlayerByName(name: String): Flow[F, Player] = {
+    playerRepo.getByName(name)
+      .flatMap(x => Flow.fromOption(x, PlayerNotFoundException(SurnameProp, name)))
+  }
+
+
+  override def findPlayerByTid(tid: String): Flow[F, Player] = {
+    playerRepo.getByTid(tid)
+      .flatMap(x => Flow.fromOption(x, PlayerNotFoundException(TidProp, tid)))
+
   }
 
   private def prepareCheckedPlayers(players: List[Player], surnames: List[String]): Result[List[Player]] = {
@@ -55,7 +68,7 @@ class PlayerServiceImpl[F[_] : Monad](PlayerRepo: PlayerRepository[F],
   }
 
   private def checkPlayerNotExist(surname: String): Flow[F, Unit] = {
-    PlayerRepo.getByName(surname.toLowerCase)
+    playerRepo.getByName(surname.toLowerCase)
       .flatMap {
         case Some(p) => Flow.error(PlayerAlreadyExistsException(p.id))
         case None => Flow.pure(())

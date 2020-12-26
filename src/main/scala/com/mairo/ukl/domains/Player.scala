@@ -10,8 +10,8 @@ import org.http4s.{EntityDecoder, EntityEncoder}
 case class Player(id: Long,
                   surname: String,
                   tid: Option[String],
-                  cid: Option[String],
-                  admin: Boolean)
+                  admin: Boolean,
+                  notificationsEnabled: Boolean)
 
 object Player {
 

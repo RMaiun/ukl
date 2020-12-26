@@ -6,13 +6,13 @@ object UklException {
 
   case class DbException(cause: Throwable) extends RuntimeException(cause)
 
-  case class ValidationException(errors: List[String]) extends RuntimeException(s"ValidationErrors: ${errors.mkString("[", ",", "]")}")
+  case class ValidationException(errors: Set[String]) extends RuntimeException(s"ValidationErrors: ${errors.mkString("[", ";", "]")}")
 
   case class InvalidUserRightsException() extends RuntimeException("Not enough rights to persist data.")
 
   case class PlayersNotFoundException(players: List[String]) extends RuntimeException(s"Players with names: [${players.mkString(",")}] were not found.")
 
-  case class PlayerNotFoundException(surname: String) extends RuntimeException(s"Player with name: $surname was not found.")
+  case class PlayerNotFoundException(criteria:String, value: String) extends RuntimeException(s"Player with $criteria: $value was not found.")
 
   case class PlayerAlreadyExistsException(uid: Long) extends RuntimeException(s"Player with given name already exists with id $uid.")
 

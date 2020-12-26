@@ -16,10 +16,16 @@ trait PlayerService[F[_]] {
 
   def addPlayer(dto: AddPlayerDto): Flow[F, IdDto]
 
-  def findPlayer(name:String):Flow[F,Player]
+  def findPlayerByName(name:String):Flow[F,Player]
+
+  def findPlayerByTid(tid:String):Flow[F,Player]
 }
 
 object PlayerService {
+  val TidProp = "tid"
+  val SurnameProp = "surname"
+  val IdProp = "id"
+
   def apply[F[_]](implicit ev: PlayerService[F]): PlayerService[F] = ev
 
   def impl[F[_] : Monad](PR: PlayerRepository[F], URS: UserRightsService[F]) =

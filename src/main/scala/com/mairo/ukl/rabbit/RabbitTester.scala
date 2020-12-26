@@ -6,8 +6,9 @@ import cats.Monad
 import cats.effect.{ConcurrentEffect, Sync, Timer}
 import cats.syntax.flatMap._
 import com.mairo.ukl.dtos.BotResponse
-import com.mairo.ukl.dtos.FoundAllPlayersDto.foundAllPlayersDtoEncoder
+import com.mairo.ukl.dtos.FoundAllPlayersDto.FoundAllPlayersDtoEncoder
 import com.mairo.ukl.helper.ConfigProvider.Config
+import com.mairo.ukl.processor.CommandObjects.BotOutputMessage
 import com.mairo.ukl.services.PlayerService
 import com.mairo.ukl.utils.FlowLog
 import io.chrisdavenport.log4cats.Logger
@@ -39,12 +40,12 @@ object RabbitTester {
     val result = for {
       _ <- FlowLog.info("Search for players")
       dtoOut <- PS.findAllPlayers
-    } yield foundAllPlayersDtoEncoder.apply(dtoOut).toString()
+    } yield FoundAllPlayersDtoEncoder.apply(dtoOut).toString()
     val mappedRes = Monad[F].map(result.value) {
       case Right(x) => x
       case Left(err) => err.getMessage
     }
-    val send = Monad[F].flatMap(mappedRes)(x => RP.publish(BotResponse(1, "test", x), config.rabbit.outputChannel).value)
+    val send = Monad[F].flatMap(mappedRes)(x => RP.publish(BotOutputMessage("x", "test", 100)).value)
 
     send >> schedule >> checkPlayers(num + 1, PS, RP)
   }

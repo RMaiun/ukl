@@ -12,13 +12,13 @@ case class FoundAllPlayersDto(players: List[Player])
 
 object FoundAllPlayersDto {
 
-  implicit val foundAllPlayersDtoDecoder: Decoder[FoundAllPlayersDto] = deriveDecoder[FoundAllPlayersDto]
+  implicit val FoundAllPlayersDtoDecoder: Decoder[FoundAllPlayersDto] = deriveDecoder[FoundAllPlayersDto]
 
-  implicit def foundAllPlayersDtoEntityDecoder[F[_] : Sync]: EntityDecoder[F, FoundAllPlayersDto] =
+  implicit def FoundAllPlayersDtoEntityDecoder[F[_] : Sync]: EntityDecoder[F, FoundAllPlayersDto] =
     jsonOf
 
-  implicit val foundAllPlayersDtoEncoder: Encoder[FoundAllPlayersDto] = deriveEncoder[FoundAllPlayersDto]
+  implicit val FoundAllPlayersDtoEncoder: Encoder[FoundAllPlayersDto] = deriveEncoder[FoundAllPlayersDto]
 
-  implicit def foundAllPlayersDtoEntityEncoder[F[_] : Applicative]: EntityEncoder[F, FoundAllPlayersDto] =
+  implicit def FoundAllPlayersDtoEntityEncoder[F[_] : Applicative]: EntityEncoder[F, FoundAllPlayersDto] =
     jsonEncoderOf
 }
