@@ -11,7 +11,9 @@ object ConfigProvider {
                        winPoints: Int,
                        winShutoutPoints: Int,
                        losePoints: Int,
-                       loseShutoutPoints: Int)
+                       loseShutoutPoints: Int,
+                       archiveReceiver: String,
+                       notificationsEnabled: Boolean)
 
   case class DbConfig(host: String,
                       port: Int,

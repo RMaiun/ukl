@@ -1,9 +1,9 @@
-package com.mairo.ukl.utils
+package com.mairo.ukl.utils.flow
 
 import cats.Functor
 import cats.data.EitherT
 import cats.syntax.either._
-import com.mairo.ukl.utils.Flow.Flow
+import com.mairo.ukl.utils.flow.Flow.Flow
 import io.chrisdavenport.log4cats.Logger
 
 object FlowLog {

@@ -16,11 +16,10 @@ object RabbitConsumer {
                                                                            MessageProcessor: TelegramBotCommandHandler[F])
                                                                           (implicit config: Config): Unit = {
     val channel = connectionFactory.newConnection().createChannel()
-    channel.basicConsume(config.rabbit.inputChannel, true, consumer(channel, "[INPUT]", MessageProcessor))
+    channel.basicConsume(config.rabbit.inputChannel, true, consumer(channel,MessageProcessor))
   }
 
   def consumer[F[_] : Sync : ConcurrentEffect : ContextShift](channel: Channel,
-                                                              logPrefix: String,
                                                               cmdHandler: TelegramBotCommandHandler[F])
                                                              (implicit MT: MonadError[F, Throwable]): Consumer = {
     new DefaultConsumer(channel) {

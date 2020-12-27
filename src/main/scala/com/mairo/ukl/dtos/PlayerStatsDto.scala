@@ -9,8 +9,7 @@ import org.http4s.circe.{jsonEncoderOf, jsonOf}
 
 case class PlayerStatsDto(surname: String,
                           score: Int,
-                          games: Int,
-                          winRate: BigDecimal)
+                          games: Int)
 
 object PlayerStatsDto{
   implicit val playerStatsDtoDecoder: Decoder[PlayerStatsDto] = deriveDecoder[PlayerStatsDto]

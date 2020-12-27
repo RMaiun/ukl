@@ -6,7 +6,7 @@ import com.mairo.ukl.dtos.AddPlayerDto._
 import com.mairo.ukl.helper.MessageFormatter
 import com.mairo.ukl.processor.CommandObjects.{BotInputMessage, BotOutputMessage}
 import com.mairo.ukl.services.PlayerService
-import com.mairo.ukl.utils.Flow.Flow
+import com.mairo.ukl.utils.flow.Flow.Flow
 
 class AddPlayerCmdProcessor[F[_] : Monad](playerService: PlayerService[F]) extends CommandProcessor[F] {
 
@@ -16,7 +16,7 @@ class AddPlayerCmdProcessor[F[_] : Monad](playerService: PlayerService[F]) exten
     for {
       dto <- parse[AddPlayerDto](input.data)
       id <- playerService.addPlayer(dto)
-      msg <- MessageFormatter.formatStoredId(id)
+      msg <- MessageFormatter.formatStoredPlayerId(id)
     } yield BotOutputMessage(input.chatId, msg)
   }
 

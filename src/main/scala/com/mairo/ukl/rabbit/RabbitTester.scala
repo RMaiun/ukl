@@ -10,7 +10,7 @@ import com.mairo.ukl.dtos.FoundAllPlayersDto.FoundAllPlayersDtoEncoder
 import com.mairo.ukl.helper.ConfigProvider.Config
 import com.mairo.ukl.processor.CommandObjects.BotOutputMessage
 import com.mairo.ukl.services.PlayerService
-import com.mairo.ukl.utils.FlowLog
+import com.mairo.ukl.utils.flow.FlowLog
 import io.chrisdavenport.log4cats.Logger
 
 import scala.concurrent.duration.FiniteDuration

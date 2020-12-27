@@ -4,8 +4,8 @@ import cats.Monad
 import com.mairo.ukl.helper.MessageFormatter
 import com.mairo.ukl.processor.CommandObjects.BotOutputMessage
 import com.mairo.ukl.services.PlayerService
-import com.mairo.ukl.utils.Flow.Flow
-import com.mairo.ukl.utils.FlowLog
+import com.mairo.ukl.utils.flow.Flow.Flow
+import com.mairo.ukl.utils.flow.FlowLog
 import io.chrisdavenport.log4cats.Logger
 
 class ListPlayersCmdProcessor[F[_] : Monad : Logger](playerService: PlayerService[F]) extends CommandProcessor[F] {

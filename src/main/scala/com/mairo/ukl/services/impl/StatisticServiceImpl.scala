@@ -3,31 +3,37 @@ package com.mairo.ukl.services.impl
 import java.time.LocalDate
 
 import cats.Monad
-import cats.implicits._
 import com.mairo.ukl.dtos.InternalDto.{RatingWithGames, StatsCalcData, StreakData}
 import com.mairo.ukl.dtos._
 import com.mairo.ukl.helper.ConfigProvider.AppConfig
 import com.mairo.ukl.helper.{DateFormatter, SeasonHelper}
 import com.mairo.ukl.services.{RoundService, StatisticService}
-import com.mairo.ukl.utils.Flow.Flow
+import com.mairo.ukl.utils.flow.Flow.Flow
+import com.mairo.ukl.validations.ValidationSet.SeasonDtoValidator
+import com.mairo.ukl.validations.Validator
 
 import scala.annotation.tailrec
 
-class StatisticServiceImpl[F[_] : Monad](RoundService: RoundService[F], config: AppConfig) extends StatisticService[F] {
+class StatisticServiceImpl[F[_] : Monad](roundService: RoundService[F],
+                                         config: AppConfig) extends StatisticService[F] {
   type MutableStreakMap = collection.mutable.Map[String, StreakData]
 
-  override def seasonStatisticsRows(seasonName: String): Flow[F, SeasonStatsRowsDto] = {
-    RoundService.findAllRounds(seasonName).map(rounds => prepareSeasonStatsTable(rounds))
+  override def seasonStatisticsRows(season: SeasonDto): Flow[F, SeasonStatsRowsDto] = {
+    roundService.findAllRounds(season.season).map(rounds => prepareSeasonStatsTable(rounds))
   }
 
-  override def seasonShortInfoStatistics(seasonName: String): Flow[F, SeasonShortStatsDto] = {
-    RoundService.findAllRounds(seasonName).map(rounds => prepareSeasonShortStats(seasonName, rounds))
+  override def seasonShortInfoStatistics(season: SeasonDto): Flow[F, SeasonShortStatsDto] = {
+    for {
+      _ <- Validator.validateDto(season)
+      rounds <- roundService.findAllRounds(season.season)
+    } yield prepareSeasonShortStats(season.season, rounds)
   }
 
   private def prepareSeasonShortStats(seasonName: String, rounds: List[FullRound]): SeasonShortStatsDto = {
     val seasonGate = SeasonHelper.seasonGate(seasonName)
     val now = LocalDate.now()
     val daysTillSeasonEnd = calculateDaysToSeasonEnd(now, seasonGate)
+
     val topPlayers = calculatePointsForPlayers(rounds, shortStats = true)
       .sortBy(-_.rating)
       .map(rwg => PlayerStatsDto(rwg.player, rwg.rating, rwg.games, 0))
@@ -106,6 +112,7 @@ class StatisticServiceImpl[F[_] : Monad](RoundService: RoundService[F], config: 
   }
 
   private def calculatePointsForPlayers(rounds: List[FullRound], shortStats: Boolean): List[RatingWithGames] = {
+
     val roundData = rounds.flatMap(r => List(
       StatsCalcData(r.w1Id, r.winner1, winPoints(r.shutout)),
       StatsCalcData(r.w2Id, r.winner2, winPoints(r.shutout)),

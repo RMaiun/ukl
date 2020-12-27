@@ -3,20 +3,21 @@ package com.mairo.ukl.services.impl
 import cats.Monad
 import cats.effect.{Sync, Timer}
 import com.mairo.ukl.errors.UklException.{InvalidBotRequest, InvalidCommandException}
-import com.mairo.ukl.postprocessor.CommandPostProcessor
+import com.mairo.ukl.postprocessor.PostProcessor
 import com.mairo.ukl.processor.CommandObjects.{BotInputMessage, BotOutputMessage}
 import com.mairo.ukl.processor.CommandProcessor
 import com.mairo.ukl.rabbit.{RabbitSender, TelegramBotCommandHandler}
-import com.mairo.ukl.utils.Flow
-import com.mairo.ukl.utils.Flow.Flow
+import com.mairo.ukl.utils.MsgIdGenerator
+import com.mairo.ukl.utils.flow.Flow.Flow
+import com.mairo.ukl.utils.flow.{Flow, FlowLog}
 import io.circe._
 import io.circe.optics.JsonPath._
 import io.circe.parser._
 
 class TelegramBotCommandHandlerImpl[F[_] : Monad : Sync : Timer](processors: Seq[CommandProcessor[F]],
-                                                                 postProcessors: Seq[CommandPostProcessor[F]],
+                                                                 postProcessors: Seq[PostProcessor[F]],
                                                                  rabbitSender: RabbitSender[F])
-  extends TelegramBotCommandHandler[F] {
+  extends TelegramBotCommandHandler[F] with MsgIdGenerator{
 
   override def handleCmd(msg: String): Flow[F, Unit] = {
     val json: Json = parse(msg).getOrElse(Json.Null)
@@ -44,7 +45,10 @@ class TelegramBotCommandHandlerImpl[F[_] : Monad : Sync : Timer](processors: Seq
   private def processCommand(input: BotInputMessage): Flow[F, Unit] = {
     val processorResult = invokeProcessor(input)
     processorResult.biflatMap(
-      err => sendErrorResponse(input.chatId, err),
+      err => for{
+        _ <- Flow.fromF(Sync[F].delay(err.printStackTrace()))
+        _ <- sendErrorResponse(input.chatId, err)
+      }yield (),
       data => sendWithPostProcessing(input, data)
     )
   }
@@ -58,9 +62,9 @@ class TelegramBotCommandHandlerImpl[F[_] : Monad : Sync : Timer](processors: Seq
 
   private def sendWithPostProcessing(input: BotInputMessage, output: BotOutputMessage): Flow[F, Unit] = {
     for {
-      _ <- rabbitSender.publish(output)
+      _ <- rabbitSender.publish(output.copy(msgId = msgId()))
       postProcessor <- selectPostProcessor(input.cmd)
-      _ <- postProcessor.postProcess(input)
+      _ <- postProcessor.fold(Flow.unit)(pp => pp.postProcess(input))
     } yield ()
   }
 
@@ -72,9 +76,7 @@ class TelegramBotCommandHandlerImpl[F[_] : Monad : Sync : Timer](processors: Seq
     Flow.fromOption(processors.find(p => p.commands().contains(cmd)), InvalidCommandException(cmd))
   }
 
-  private def selectPostProcessor(cmd: String): Flow[F, CommandPostProcessor[F]] = {
-    Flow.fromOption(postProcessors.find(p => p.commands().contains(cmd)), InvalidCommandException(cmd))
+  private def selectPostProcessor(cmd: String): Flow[F, Option[PostProcessor[F]]] = {
+    Flow.pure(postProcessors.find(p => p.commands().contains(cmd)))
   }
-
-  private def msgId(): Int = (System.currentTimeMillis() % Int.MaxValue).toInt
 }

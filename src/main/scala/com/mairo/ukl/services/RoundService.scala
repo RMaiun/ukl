@@ -4,7 +4,7 @@ import cats.Monad
 import com.mairo.ukl.dtos._
 import com.mairo.ukl.repositories.RoundRepository
 import com.mairo.ukl.services.impl.RoundServiceImpl
-import com.mairo.ukl.utils.Flow.Flow
+import com.mairo.ukl.utils.flow.Flow.Flow
 
 trait RoundService[F[_]] {
   def findLastRoundsInSeason(dto: FindLastRoundsDto): Flow[F, FoundLastRoundsDto]

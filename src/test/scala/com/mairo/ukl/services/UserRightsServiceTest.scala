@@ -5,7 +5,7 @@ import com.mairo.ukl.TestData
 import com.mairo.ukl.domains.Player
 import com.mairo.ukl.errors.UklException.InvalidUserRightsException
 import com.mairo.ukl.repositories.PlayerRepository
-import com.mairo.ukl.utils.Flow
+import com.mairo.ukl.utils.flow.Flow
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers

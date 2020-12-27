@@ -4,8 +4,8 @@ import java.sql.SQLException
 
 import cats.Monad
 import com.mairo.ukl.errors.UklException.DbException
-import com.mairo.ukl.utils.Flow.Flow
-import com.mairo.ukl.utils.ResultOps.Result
+import com.mairo.ukl.utils.flow.Flow.Flow
+import com.mairo.ukl.utils.flow.ResultOps.Result
 
 trait GenericRepository[F[_], T] {
   def listAll: Flow[F, List[T]]

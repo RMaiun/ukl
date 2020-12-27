@@ -5,7 +5,7 @@ import com.wix.accord.dsl._
 import com.wix.accord.transform.ValidationTransform.TransformedValidator
 
 
-object ValidationsSet extends CustomValidationRules {
+object ValidationSet extends CustomValidationRules {
 
   implicit val ListLastRoundsValidator: TransformedValidator[FindLastRoundsDto] = validator[FindLastRoundsDto] { dto =>
     dto.season is season
@@ -35,7 +35,7 @@ object ValidationsSet extends CustomValidationRules {
     dto.tid is notEmpty and onlyNumbers
   }
 
-  implicit val SubscriptionActionValidator: TransformedValidator[SeasonDto] = validator[SeasonDto] { dto =>
-    dto.season is season
+  implicit val SubscriptionActionValidator: TransformedValidator[SubscriptionActionDto] = validator[SubscriptionActionDto] { dto =>
+    dto.tid is notEmpty and onlyNumbers
   }
 }

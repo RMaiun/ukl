@@ -1,10 +1,10 @@
-package com.mairo.ukl.utils
+package com.mairo.ukl.utils.flow
 
 import cats.data.EitherT
-import cats.{Applicative, Monad}
-import com.mairo.ukl.utils.ResultOps.Result
 import cats.syntax.either._
-import com.wix.accord.{Failure, Success}
+import cats.{Applicative, Monad}
+import com.mairo.ukl.utils.flow.ResultOps.Result
+
 object Flow {
 
   type Flow[F[_], T] = EitherT[F, Throwable, T]

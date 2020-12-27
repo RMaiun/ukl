@@ -4,8 +4,9 @@ import cats.Monad
 import cats.effect.Sync
 import com.mairo.ukl.domains.Season
 import com.mairo.ukl.domains.queries.SeasonQueries
-import com.mairo.ukl.utils.Flow
-import com.mairo.ukl.utils.Flow.Flow
+import com.mairo.ukl.utils.flow
+import com.mairo.ukl.utils.flow.Flow.Flow
+import com.mairo.ukl.utils.flow.Flow
 import doobie.hikari.HikariTransactor
 import doobie.implicits._
 import io.chrisdavenport.log4cats.Logger
@@ -31,7 +32,7 @@ object SeasonRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow(result)
+      flow.Flow(result)
     }
 
     override def listAll: Flow[F, List[Season]] = {
@@ -40,7 +41,7 @@ object SeasonRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow(result)
+      flow.Flow(result)
     }
 
     override def getById(id: Long): Flow[F, Option[Season]] = {
@@ -49,7 +50,7 @@ object SeasonRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow(result)
+      flow.Flow(result)
     }
 
     override def insert(name: String): Flow[F, Long] = {
@@ -58,7 +59,7 @@ object SeasonRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow(result)
+      flow.Flow(result)
     }
 
     override def update(data: Season): Flow[F, Season] = {
@@ -85,7 +86,7 @@ object SeasonRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow(result)
+      flow.Flow(result)
     }
   }
 }

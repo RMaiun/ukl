@@ -6,8 +6,9 @@ import cats.Monad
 import cats.effect.Sync
 import com.mairo.ukl.domains.Round
 import com.mairo.ukl.domains.queries.RoundQueries
-import com.mairo.ukl.utils.Flow
-import com.mairo.ukl.utils.Flow.Flow
+import com.mairo.ukl.utils.flow
+import com.mairo.ukl.utils.flow.Flow.Flow
+import com.mairo.ukl.utils.flow.Flow
 import doobie.hikari.HikariTransactor
 import doobie.implicits._
 import io.chrisdavenport.log4cats.Logger
@@ -42,7 +43,7 @@ object RoundRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow(result)
+      flow.Flow(result)
     }
 
     override def update(data: Round): Flow[F, Round] = {
@@ -60,7 +61,7 @@ object RoundRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow(result)
+      flow.Flow(result)
     }
 
     override def listLimitedLastRoundsBySeason(seasonId: Long, limit: Int): Flow[F, List[Round]] = {
@@ -69,7 +70,7 @@ object RoundRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow(result)
+      flow.Flow(result)
     }
 
     override def listAll: Flow[F, List[Round]] = {
@@ -78,7 +79,7 @@ object RoundRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow(result)
+      flow.Flow(result)
     }
 
     override def getById(id: Long): Flow[F, Option[Round]] = {
@@ -87,7 +88,7 @@ object RoundRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow(result)
+      flow.Flow(result)
     }
 
     override def deleteById(id: Long): Flow[F, Long] = {
@@ -105,7 +106,7 @@ object RoundRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow(result)
+      flow.Flow(result)
     }
   }
 }

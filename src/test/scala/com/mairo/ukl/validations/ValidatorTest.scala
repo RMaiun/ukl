@@ -5,7 +5,7 @@ import com.mairo.ukl.dtos.AddPlayerDto
 import org.scalatest.Inside
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import ValidationsSet.AddPlayerDtoValidator
+import ValidationSet.AddPlayerDtoValidator
 class ValidatorTest extends AnyFlatSpec with Matchers with Inside {
 
   "Validator" should "return validation error" in {

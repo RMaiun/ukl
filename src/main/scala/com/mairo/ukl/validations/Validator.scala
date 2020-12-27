@@ -2,8 +2,8 @@ package com.mairo.ukl.validations
 
 import cats.Monad
 import com.mairo.ukl.errors.UklException.ValidationException
-import com.mairo.ukl.utils.Flow
-import com.mairo.ukl.utils.Flow.Flow
+import com.mairo.ukl.utils.flow.Flow.Flow
+import com.mairo.ukl.utils.flow.Flow
 import com.wix.accord._
 
 

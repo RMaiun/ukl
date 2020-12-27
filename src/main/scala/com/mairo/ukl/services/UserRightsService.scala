@@ -5,8 +5,8 @@ import cats.syntax.either._
 import com.mairo.ukl.domains.Player
 import com.mairo.ukl.errors.UklException.InvalidUserRightsException
 import com.mairo.ukl.repositories.PlayerRepository
-import com.mairo.ukl.utils.Flow
-import com.mairo.ukl.utils.Flow.Flow
+import com.mairo.ukl.utils.flow.Flow.Flow
+import com.mairo.ukl.utils.flow.Flow
 
 trait UserRightsService[F[_]] {
   def checkUserIsAdmin(tid: String): Flow[F, Player]

@@ -7,9 +7,9 @@ import com.mairo.ukl.dtos.{BotRequestDto, FoundAllPlayersDto}
 import com.mairo.ukl.helper.ConfigProvider.Config
 import com.mairo.ukl.rabbit.RabbitSender
 import com.mairo.ukl.repositories.PlayerRepository
-import com.mairo.ukl.utils.Flow.Flow
-import com.mairo.ukl.utils.ResultOps.Result
-import com.mairo.ukl.utils.{Flow, FlowLog}
+import com.mairo.ukl.utils.flow.Flow.Flow
+import com.mairo.ukl.utils.flow.ResultOps.Result
+import com.mairo.ukl.utils.flow.{Flow, FlowLog}
 import io.chrisdavenport.log4cats.Logger
 import io.circe.generic.semiauto._
 import io.circe.{Decoder, Encoder}

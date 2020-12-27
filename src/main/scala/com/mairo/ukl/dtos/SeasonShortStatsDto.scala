@@ -11,8 +11,8 @@ case class SeasonShortStatsDto(season: String,
                                playersRating: List[PlayerStatsDto],
                                gamesPlayed: Int,
                                daysToSeasonEnd: Int,
-                               bestStreak: StreakDto,
-                               worstStreak: StreakDto)
+                               bestStreak: Option[StreakDto],
+                               worstStreak: Option[StreakDto])
 
 object SeasonShortStatsDto {
   implicit val seasonShortStatsDtoDecoder: Decoder[SeasonShortStatsDto] = deriveDecoder[SeasonShortStatsDto]

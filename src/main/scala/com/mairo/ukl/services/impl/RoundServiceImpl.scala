@@ -10,19 +10,22 @@ import com.mairo.ukl.errors.UklException.{PlayersNotFoundException, SamePlayersI
 import com.mairo.ukl.helper.QuarterCalculator.currentQuarter
 import com.mairo.ukl.repositories.RoundRepository
 import com.mairo.ukl.services.{PlayerService, RoundService, SeasonService, UserRightsService}
-import com.mairo.ukl.utils.Flow
-import com.mairo.ukl.utils.Flow.Flow
-
-class RoundServiceImpl[F[_] : Monad](PlayerService: PlayerService[F],
-                                     SeasonService: SeasonService[F],
-                                     RoundRepository: RoundRepository[F],
-                                     UserRightsService: UserRightsService[F]) extends RoundService[F] {
+import com.mairo.ukl.utils.flow.Flow.Flow
+import com.mairo.ukl.utils.flow.Flow
+import com.mairo.ukl.validations.Validator
+import com.mairo.ukl.validations.ValidationSet.AddRoundDtoValidator
+import com.mairo.ukl.validations.ValidationSet._
+class RoundServiceImpl[F[_] : Monad](playerService: PlayerService[F],
+                                     seasonService: SeasonService[F],
+                                     roundRepository: RoundRepository[F],
+                                     userRightsService: UserRightsService[F]) extends RoundService[F] {
 
   override def findLastRoundsInSeason(dto: FindLastRoundsDto): Flow[F, FoundLastRoundsDto] = {
     for {
-      playerMap <- PlayerService.findAllPlayersAsMap
-      season <- SeasonService.findSafe(dto.season)
-      rounds <- RoundRepository.listLimitedLastRoundsBySeason(season.id, dto.qty)
+      _ <- Validator.validateDto(dto)
+      playerMap <- playerService.findAllPlayersAsMap
+      season <- seasonService.findSafe(dto.season)
+      rounds <- roundRepository.listLimitedLastRoundsBySeason(season.id, dto.qty)
     } yield {
       val transformedRounds = transformRounds(season, playerMap, rounds)
       FoundLastRoundsDto(transformedRounds)
@@ -31,21 +34,22 @@ class RoundServiceImpl[F[_] : Monad](PlayerService: PlayerService[F],
 
   override def findAllRounds(seasonName: String): Flow[F, List[FullRound]] = {
     for {
-      playerMap <- PlayerService.findAllPlayersAsMap
-      season <- SeasonService.findSafe(seasonName)
-      rounds <- RoundRepository.listRoundsBySeason(season.id)
+      playerMap <- playerService.findAllPlayersAsMap
+      season <- seasonService.findSafe(seasonName)
+      rounds <- roundRepository.listRoundsBySeason(season.id)
     } yield transformRounds(season, playerMap, rounds)
   }
 
   override def saveRound(dto: AddRoundDto): Flow[F, IdDto] = {
     //todo: add cache for future document
     for {
-      _ <- UserRightsService.checkUserIsAdmin(dto.moderator)
+      _ <- Validator.validateDto(dto)
+      _ <- userRightsService.checkUserIsAdmin(dto.moderator)
       _ <- checkAllPlayersAreDifferent(dto)
-      season <- SeasonService.findSafe(currentQuarter)
-      data <- PlayerService.findAllPlayers
+      season <- seasonService.findSafe(currentQuarter)
+      data <- playerService.findAllPlayers
       roundPlayers <- checkAllPlayersArePresent(RoundPlayerNames(dto.w1, dto.w2, dto.l1, dto.l2), data.players)
-      storedId <- RoundRepository.insert(roundPlayers.w1.id, roundPlayers.w2.id, roundPlayers.l1.id, roundPlayers.l2.id, dto.shutout, season.id, LocalDateTime.now())
+      storedId <- roundRepository.insert(roundPlayers.w1.id, roundPlayers.w2.id, roundPlayers.l1.id, roundPlayers.l2.id, dto.shutout, season.id, LocalDateTime.now())
     } yield IdDto(storedId)
   }
 

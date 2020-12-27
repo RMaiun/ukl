@@ -2,7 +2,8 @@ package com.mairo.ukl.utils
 
 import cats.Monad
 import com.mairo.ukl.errors.UklException.AbsentCommandInput
-import com.mairo.ukl.utils.Flow.Flow
+import com.mairo.ukl.utils.flow.Flow
+import com.mairo.ukl.utils.flow.Flow.Flow
 import io.circe.{Decoder, Json}
 
 trait ParseSupport[F[_]] {

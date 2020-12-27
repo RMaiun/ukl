@@ -5,8 +5,9 @@ import cats.data.NonEmptyList
 import cats.effect.Sync
 import com.mairo.ukl.domains.Player
 import com.mairo.ukl.domains.queries.PlayerQueries
-import com.mairo.ukl.utils.Flow
-import com.mairo.ukl.utils.Flow.Flow
+import com.mairo.ukl.utils.flow
+import com.mairo.ukl.utils.flow.Flow.Flow
+import com.mairo.ukl.utils.flow.Flow
 import doobie.hikari.HikariTransactor
 import doobie.implicits._
 import io.chrisdavenport.log4cats.Logger
@@ -40,7 +41,7 @@ object PlayerRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow(result)
+      flow.Flow(result)
     }
 
     override def findPlayers(surnames: List[String]): Flow[F, List[Player]] = {
@@ -51,7 +52,7 @@ object PlayerRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow(result)
+      flow.Flow(result)
     }
 
     override def getById(id: Long): Flow[F, Option[Player]] = {
@@ -60,7 +61,7 @@ object PlayerRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow(result)
+      flow.Flow(result)
     }
 
     override def getByName(name: String): Flow[F, Option[Player]] = {
@@ -69,7 +70,7 @@ object PlayerRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow(result)
+      flow.Flow(result)
     }
 
     override def getByTid(tid: String): Flow[F, Option[Player]] = {
@@ -78,7 +79,7 @@ object PlayerRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow(result)
+      flow.Flow(result)
     }
 
     override def insert(player: Player): Flow[F, Long] = {
@@ -87,7 +88,7 @@ object PlayerRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow(result)
+      flow.Flow(result)
     }
 
     override def update(data: Player): Flow[F, Player] = {
@@ -114,7 +115,7 @@ object PlayerRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow(result)
+      flow.Flow(result)
     }
 
     override def clearTable: Flow[F, Int] = {
@@ -123,7 +124,7 @@ object PlayerRepository {
         .transact(xa)
         .attemptSql
         .adaptError
-      Flow(result)
+      flow.Flow(result)
     }
   }
 

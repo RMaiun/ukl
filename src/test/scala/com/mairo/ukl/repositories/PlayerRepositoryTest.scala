@@ -4,7 +4,7 @@ import cats.effect.{ContextShift, IO}
 import com.mairo.ukl.domains.Player
 import com.mairo.ukl.helper.{ConfigProvider, TransactorProvider}
 import com.mairo.ukl.services.PlayerService.SurnameProp
-import com.mairo.ukl.utils.ResultOps.Result
+import com.mairo.ukl.utils.flow.ResultOps.Result
 import doobie.hikari.HikariTransactor
 import doobie.util.ExecutionContexts
 import io.chrisdavenport.log4cats.SelfAwareStructuredLogger

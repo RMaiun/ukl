@@ -5,7 +5,7 @@ import com.mairo.ukl.domains.Player
 import com.mairo.ukl.dtos.{AddPlayerDto, FoundAllPlayersDto, IdDto}
 import com.mairo.ukl.repositories.PlayerRepository
 import com.mairo.ukl.services.impl.PlayerServiceImpl
-import com.mairo.ukl.utils.Flow.Flow
+import com.mairo.ukl.utils.flow.Flow.Flow
 
 trait PlayerService[F[_]] {
   def findAllPlayersAsMap: Flow[F, Map[Long, String]]
@@ -19,6 +19,10 @@ trait PlayerService[F[_]] {
   def findPlayerByName(name:String):Flow[F,Player]
 
   def findPlayerByTid(tid:String):Flow[F,Player]
+
+  def enableNotifications(surname:String, tid:String):Flow[F, Player]
+
+  def updatePlayer(player: Player):Flow[F, Player]
 }
 
 object PlayerService {

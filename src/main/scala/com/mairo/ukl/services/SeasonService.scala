@@ -5,8 +5,8 @@ import com.mairo.ukl.domains.Season
 import com.mairo.ukl.errors.UklException.SeasonNotFoundException
 import com.mairo.ukl.helper.QuarterCalculator
 import com.mairo.ukl.repositories.SeasonRepository
-import com.mairo.ukl.utils.Flow
-import com.mairo.ukl.utils.Flow.Flow
+import com.mairo.ukl.utils.flow.Flow.Flow
+import com.mairo.ukl.utils.flow.Flow
 
 trait SeasonService[F[_]] {
   def findSeasonByName(name: String): Flow[F, Season]

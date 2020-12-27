@@ -3,8 +3,8 @@ package com.mairo.ukl.helper
 import cats.Monad
 import cats.syntax.either._
 import com.mairo.ukl.dtos._
-import com.mairo.ukl.utils.Flow
-import com.mairo.ukl.utils.Flow.Flow
+import com.mairo.ukl.utils.flow.Flow.Flow
+import com.mairo.ukl.utils.flow.Flow
 
 object MessageFormatter {
 
@@ -80,10 +80,19 @@ object MessageFormatter {
     s"``` $formedBlocks```"
   }
 
-  def formatStoredId[F[_] : Monad](data: IdDto): Flow[F, String] = {
+  def formatStoredRoundId[F[_] : Monad](data: IdDto): Flow[F, String] = {
     val msg =
       s"""```
          |New round was stored with id ${data.id}```
+        """.stripMargin
+        .asRight[Throwable]
+    Flow.fromRes(msg)
+  }
+
+  def formatStoredPlayerId[F[_] : Monad](data: IdDto): Flow[F, String] = {
+    val msg =
+      s"""```
+         |New players was stored with id ${data.id}```
         """.stripMargin
         .asRight[Throwable]
     Flow.fromRes(msg)

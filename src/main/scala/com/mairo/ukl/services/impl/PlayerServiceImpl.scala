@@ -8,10 +8,10 @@ import com.mairo.ukl.errors.UklException.{PlayerAlreadyExistsException, PlayerNo
 import com.mairo.ukl.repositories.PlayerRepository
 import com.mairo.ukl.services.PlayerService.{SurnameProp, TidProp}
 import com.mairo.ukl.services.{PlayerService, UserRightsService}
-import com.mairo.ukl.utils.Flow
-import com.mairo.ukl.utils.Flow.Flow
-import com.mairo.ukl.utils.ResultOps.Result
-import com.mairo.ukl.validations.ValidationsSet._
+import com.mairo.ukl.utils.flow.Flow
+import com.mairo.ukl.utils.flow.Flow.Flow
+import com.mairo.ukl.utils.flow.ResultOps.Result
+import com.mairo.ukl.validations.ValidationSet._
 import com.mairo.ukl.validations.Validator
 
 class PlayerServiceImpl[F[_] : Monad](playerRepo: PlayerRepository[F],
@@ -73,5 +73,19 @@ class PlayerServiceImpl[F[_] : Monad](playerRepo: PlayerRepository[F],
         case Some(p) => Flow.error(PlayerAlreadyExistsException(p.id))
         case None => Flow.pure(())
       }
+  }
+
+  override def enableNotifications(surname: String, tid: String): Flow[F, Player] = {
+    for {
+      foundPlayer <- findPlayerByName(surname)
+      updPlayer <- playerRepo.update(foundPlayer.copy(tid = Some(tid), notificationsEnabled = true))
+    } yield updPlayer
+  }
+
+  override def updatePlayer(player: Player): Flow[F, Player] = {
+    for {
+      _ <- playerRepo.getByName(player.surname)
+      updPlayer <- playerRepo.update(player)
+    } yield updPlayer
   }
 }
