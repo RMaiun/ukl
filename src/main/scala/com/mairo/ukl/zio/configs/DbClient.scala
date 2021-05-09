@@ -5,11 +5,11 @@ import zio.{ Has, Task, ZLayer }
 
 object DbClient {
 
-  val uri = "mongodb://user123:passwd123@host1:27018,host2:27019,host3:27020/somedb"
+  val uri = "mongodb://root:password@localhost:27017/cata"
   type HasDb = Has[DB]
 
   def connection: Task[MongoConnection] = {
-    val driver = new reactivemongo.api.AsyncDriver
+    val driver = new reactivemongo.api.AsyncDriver()
     Task.fromFuture { implicit ec =>
       for {
         parsedUri <- MongoConnection.fromString(uri)

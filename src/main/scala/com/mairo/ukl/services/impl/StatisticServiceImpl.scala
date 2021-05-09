@@ -36,10 +36,10 @@ class StatisticServiceImpl[F[_] : Monad](roundService: RoundService[F],
 
     val topPlayers = calculatePointsForPlayers(rounds, shortStats = true)
       .sortBy(-_.rating)
-      .map(rwg => PlayerStatsDto(rwg.player, rwg.rating, rwg.games, 0))
+      .map(rwg => PlayerStatsDto(rwg.player, rwg.rating, rwg.games))
 
     val topPair = calculateStreaks(rounds)
-    SeasonShortStatsDto(seasonName, topPlayers, rounds.size, daysTillSeasonEnd, topPair._1, topPair._2)
+    SeasonShortStatsDto(seasonName, topPlayers, rounds.size, daysTillSeasonEnd, Some(topPair._1), Some(topPair._2))
   }
 
   private def calculateStreaks(rounds: List[FullRound]): (StreakDto, StreakDto) = {

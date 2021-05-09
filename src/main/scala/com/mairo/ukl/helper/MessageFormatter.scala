@@ -38,8 +38,8 @@ object MessageFormatter {
           val points = data.playersRating(a).score
           s"$index. $name $points"
         }).mkString(System.lineSeparator())
-        val bestStreak = s"${data.bestStreak.player}: ${data.bestStreak.games.toString} games in row"
-        val worstStreak = s"${data.worstStreak.player}: ${data.worstStreak.games.toString} games in row"
+        val bestStreak = s"${data.bestStreak}: ${data.bestStreak.toString} games in row"
+        val worstStreak = s"${data.worstStreak}: ${data.worstStreak.toString} games in row"
         val msg =
           s"""```
              |Season: ${data.season}

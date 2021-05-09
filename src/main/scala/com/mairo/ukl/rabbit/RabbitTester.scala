@@ -5,7 +5,6 @@ import java.util.concurrent.{ExecutorService, Executors, TimeUnit}
 import cats.Monad
 import cats.effect.{ConcurrentEffect, Sync, Timer}
 import cats.syntax.flatMap._
-import com.mairo.ukl.dtos.BotResponse
 import com.mairo.ukl.dtos.FoundAllPlayersDto.FoundAllPlayersDtoEncoder
 import com.mairo.ukl.helper.ConfigProvider.Config
 import com.mairo.ukl.processor.CommandObjects.BotOutputMessage

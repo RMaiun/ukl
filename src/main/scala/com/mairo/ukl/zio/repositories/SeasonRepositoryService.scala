@@ -12,9 +12,9 @@ class SeasonRepositoryService(db: DB) extends SeasonRepository.Service {
 
   def collection: BSONCollection = db.collection("season")
 
-  override def getSeason(name: String): Task[Season] = {
+  override def getSeason(name: String): Task[Option[Season]] = {
     val query = BSONDocument("name" -> name)
-    Task.fromFuture(implicit ec => collection.find(query).requireOne[Season])
+    Task.fromFuture(implicit ec => collection.find(query).one[Season])
   }
 
   override def saveSeason(season: Season): Task[Season] =
@@ -30,7 +30,7 @@ class SeasonRepositoryService(db: DB) extends SeasonRepository.Service {
   }
 
   override def listAll: Task[List[Season]] =
-    Task.fromFuture(implicit ec => collection.find(BSONDocument.empty).cursor[Season]().collect[List])
+    Task.fromFuture(implicit ec => collection.find(BSONDocument.empty).cursor[Season]().collect[List]())
 
   override def findFirstSeasonWithoutNotification: Task[Option[Season]] =
     Task.fromFuture(implicit ec => collection.find(BSONDocument("seasonEndNotification" -> None)).one[Season])

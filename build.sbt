@@ -22,9 +22,11 @@ lazy val root = (project in file("."))
       "io.circe" %% "circe-literal" % CirceVersion % "it,test",
 
       "dev.zio" %% "zio" % "1.0.7",
-      "dev.zio" %% "zio-interop-cats" % "3.0.2.0",
+      "dev.zio" %% "zio-interop-cats" % "2.4.1.0",
       "dev.zio" %% "zio-logging" % "0.5.8",
-      "org.reactivemongo" %% "reactivemongo" % "1.0.3" % "provided",
+      "dev.zio" %% "zio-logging-slf4j" % "0.5.8",
+
+      "org.reactivemongo" %% "reactivemongo" % "1.0.3",
 
       "ch.qos.logback" % "logback-classic" % LogbackVersion,
       "io.chrisdavenport" %% "log4cats-slf4j" % "1.1.1",
