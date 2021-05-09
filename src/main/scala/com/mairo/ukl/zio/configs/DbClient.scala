@@ -5,10 +5,9 @@ import zio.{ Has, Task, ZLayer }
 
 object DbClient {
 
-  val uri = "mongodb://root:password@localhost:27017/cata"
   type HasDb = Has[DB]
 
-  def connection: Task[MongoConnection] = {
+  def connection(uri: String): Task[MongoConnection] = {
     val driver = new reactivemongo.api.AsyncDriver()
     Task.fromFuture { implicit ec =>
       for {
@@ -21,10 +20,12 @@ object DbClient {
   def seasonDb(conn: MongoConnection): Task[DB] =
     Task.fromFuture(ec => conn.database("cata")(ec))
 
-  val live: ZLayer[Any, Throwable, HasDb] =
-    (for {
-      c  <- connection
-      db <- seasonDb(c)
-    } yield db).toLayer
+  val live: ZLayer[HasAllConfigs, Throwable, HasDb] =
+    ZLayer.fromFunctionM(cfg =>
+      for {
+        c  <- connection(cfg.get.app.mongoUrl)
+        db <- seasonDb(c)
+      } yield db
+    )
 
 }
