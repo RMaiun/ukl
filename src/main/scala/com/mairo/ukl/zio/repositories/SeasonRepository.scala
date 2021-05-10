@@ -1,7 +1,8 @@
 package com.mairo.ukl.zio.repositories
 
 import com.mairo.ukl.zio.configs.DbClient.HasDb
-import zio.{ Has, RIO, Task, ZIO, ZLayer }
+import com.mairo.ukl.zio.repositories.interpreters.SeasonRepositoryInterpreter
+import zio.{Has, RIO, Task, ZIO, ZLayer}
 
 object SeasonRepository {
   type HasSeasonRepo = Has[SeasonRepository.Service]
@@ -18,7 +19,7 @@ object SeasonRepository {
     def findFirstSeasonWithoutNotification: Task[Option[Season]]
   }
 
-  val live: ZLayer[HasDb, Nothing, HasSeasonRepo] = ZLayer.fromService(db => new SeasonRepositoryService(db))
+  val live: ZLayer[HasDb, Nothing, HasSeasonRepo] = ZLayer.fromService(db => new SeasonRepositoryInterpreter(db))
 
   def getSeason(name: String): RIO[HasSeasonRepo, Option[Season]] = ZIO.accessM(_.get.getSeason(name))
 

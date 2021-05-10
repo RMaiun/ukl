@@ -1,11 +1,12 @@
-package com.mairo.ukl.zio.repositories
+package com.mairo.ukl.zio.repositories.interpreters
 
+import com.mairo.ukl.zio.repositories.{Season, SeasonRepository}
 import reactivemongo.api.DB
 import reactivemongo.api.bson.collection.BSONCollection
-import reactivemongo.api.bson.{ BSONDocument, BSONDocumentReader, BSONDocumentWriter, Macros }
+import reactivemongo.api.bson.{BSONDocument, BSONDocumentReader, BSONDocumentWriter, Macros}
 import zio.Task
 
-class SeasonRepositoryService(db: DB) extends SeasonRepository.Service {
+class SeasonRepositoryInterpreter(db: DB) extends SeasonRepository.Service {
 
   implicit val reader: BSONDocumentReader[Season] = Macros.reader[Season]
   implicit val writer: BSONDocumentWriter[Season] = Macros.writer[Season]

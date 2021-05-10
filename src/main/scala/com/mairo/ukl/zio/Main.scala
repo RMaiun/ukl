@@ -1,10 +1,11 @@
 package com.mairo.ukl.zio
 
+import cats.data.Kleisli
 import cats.effect._
 import com.mairo.ukl.zio.configs.layers
 import com.mairo.ukl.zio.services.SeasonService
 import fs2.Stream.Compiler._
-import org.http4s.HttpApp
+import org.http4s.{Header, HttpApp, HttpRoutes, Request, Status}
 import org.http4s.implicits._
 import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
@@ -20,7 +21,7 @@ object Main extends zio.App {
       for {
         _      <- logging.log.info(s"Starting...")
         httpApp = Router[AppTask](
-          "/season" -> SeasonService.routes()
+          "/season" -> myMiddle(SeasonService.routes(), Header("SomeKey", "SomeValue"))
         ).orNotFound
 
         _ <- runHttp(httpApp, 9001)
@@ -29,6 +30,15 @@ object Main extends zio.App {
     prog
       .provideSomeLayer[ZEnv](layers.live.appLayer)
       .orDie
+  }
+
+  def myMiddle(service: HttpRoutes[AppTask], header: Header): HttpRoutes[AppTask] = Kleisli { req: Request[AppTask] =>
+    service(req).map {
+      case Status.Successful(resp) =>
+        resp.putHeaders(header)
+      case resp =>
+        resp
+    }
   }
 
   def runHttp[R <: Clock](
